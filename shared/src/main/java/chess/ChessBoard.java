@@ -24,7 +24,7 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
 
-        squares[position.getRow()][position.getColumn()] = piece;
+        squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -35,7 +35,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()][position.getColumn()];
+        return squares[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -44,8 +44,8 @@ public class ChessBoard {
      */
     public void resetBoard() {
         squares = new ChessPiece[8][8];
-        for (int i= 0; i< 8; i++){
-            addBothPieces(ChessPiece.PieceType.PAWN, 1, 6, i);
+        for (int i= 1; i< 9; i++){
+            addBothPieces(ChessPiece.PieceType.PAWN, 2, 7, i);
         }
         for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
             if (type != ChessPiece.PieceType.PAWN){
@@ -54,29 +54,29 @@ public class ChessBoard {
                 boolean two = true;
                 switch (type){
                     case KING:
-                        y = 4;
+                        y = 5;
                         two = false;
                         break;
                     case QUEEN:
-                        y = 3;
+                        y = 4;
                         two = false;
                         break;
                     case KNIGHT:
-                        y = 1;
-                        j=6;
+                        y = 2;
+                        j=7;
                         break;
                     case ROOK:
-                        y = 0;
-                        j = 7;
+                        y = 1;
+                        j = 8;
                         break;
                     case BISHOP:
-                        y = 2;
-                        j = 5;
+                        y = 3;
+                        j = 6;
                         break;
                 }
-                addBothPieces(type, 0, 7, y);
+                addBothPieces(type, 1, 8, y);
                 if (two){
-                    addBothPieces(type, 0, 7, j);
+                    addBothPieces(type, 1, 8, j);
                 }
             }
         }
@@ -87,8 +87,8 @@ public class ChessBoard {
         ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
         ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
         //System.out.println(b.toString());
-        ChessPosition B = new ChessPosition(x,y);
-        ChessPosition W = new ChessPosition(z,y);
+        ChessPosition W = new ChessPosition(x,y);
+        ChessPosition B = new ChessPosition(z,y);
         //System.out.println(B.toString());
         addPiece(B,b);
         addPiece(W, w);
@@ -117,7 +117,7 @@ public class ChessBoard {
             s.append("\n");
             for(ChessPiece p : r){
                 if (p != null){
-                    s.append(p.getPieceType().name());
+                    s.append(p.getPieceType().name() + p.getTeamColor().name());
                     s.append(" ");
                 }
                 else {
