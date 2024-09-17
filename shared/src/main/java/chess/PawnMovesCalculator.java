@@ -8,10 +8,66 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         HashSet<ChessMove> options = new HashSet<>();
-        int[][] directions = {{1,1},{1,-1},{-1,-1},{-1,1},{0,1},{0,-1},{-1,0},{1,0}};
-        ChessPosition newPos = position;
-        for (int i = 0; i < directions.length; i++){
+        int d = 0;
+        int start = -1;
+        switch (board.getPiece(position).getTeamColor()){
+            case BLACK -> {
+                d= -1;
+                start = 7;
+            }
+            case WHITE -> {
+                d = 1;
+                start = 2;
+            }
+        }
+        int[][] directions = {{d,0}, {d, 1},{d,-1}, {(d*2),0}};
+        for (int i = 0; i < directions.length; i++) {
+            ChessPosition newPos = new ChessPosition((position.getRow() + directions[i][0]), (position.getColumn() + directions[i][1]));
+            boolean allowed = true;
+            if (i != 0){
+                if (i == 3){
+                    if (position.getRow() != start){
+                        allowed = false;
+                    }
+                    if (board.getPiece(new ChessPosition((position.getRow() + directions[0][0]), (position.getColumn() + directions[0][1]))) != null) {
+                        allowed = false;
+                    }
+                } else {
+                    if(board.getPiece(newPos) == null){
+                        allowed = false;
+                    }
+                }
+            }
+            if (i == 0){
+                if (board.getPiece(newPos) != null) {
+                    allowed = false;
+                }
+            }
+            if (allowed) {
+                if (!checkIfNotAllowed(board, position, newPos)) {
+                    if (i != 3) {
+                        if (newPos.getRow() == 1 || newPos.getRow() == 8) {
+                            ChessMove newMove = new ChessMove(position, newPos, ChessPiece.PieceType.QUEEN);
+                            options.add(newMove);
+                            newMove = new ChessMove(position, newPos, ChessPiece.PieceType.ROOK);
+                            options.add(newMove);
+                            newMove = new ChessMove(position, newPos, ChessPiece.PieceType.BISHOP);
+                            options.add(newMove);
+                            newMove = new ChessMove(position, newPos, ChessPiece.PieceType.KNIGHT);
+                            options.add(newMove);
 
+                        } else {
+                            ChessMove newMove = new ChessMove(position, newPos, null);
+                            options.add(newMove);
+                        }
+                    } else {
+                        if (board.getPiece(newPos) == null){
+                            ChessMove newMove = new ChessMove(position, newPos, null);
+                            options.add(newMove);
+                        }
+                    }
+                }
+            }
         }
         return options;
     }
