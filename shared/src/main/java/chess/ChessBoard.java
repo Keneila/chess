@@ -43,7 +43,54 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        squares = new ChessPiece[8][8];
+        for (int i= 0; i< 8; i++){
+            ChessPiece pawnB = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+            ChessPiece pawnW = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            ChessPosition B = new ChessPosition(1,i);
+            ChessPosition W = new ChessPosition(6,i);
+            addPiece(B, pawnB);
+            addPiece(W, pawnW);
+        }
+        for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
+            if (type != ChessPiece.PieceType.PAWN){
+                int y = -1;
+                int j = -1;
+                boolean two = true;
+                switch (type){
+                    case KING:
+                        y = 4;
+                        two = false;
+                    case QUEEN:
+                        y = 3;
+                        two = false;
+                    case KNIGHT:
+                        y = 1;
+                        j=6;
+                    case ROOK:
+                        y = 0;
+                        j = 7;
+                    case BISHOP:
+                        y = 2;
+                        j = 5;
+                }
+                ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
+                ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
+                ChessPosition B = new ChessPosition(0,y);
+                ChessPosition W = new ChessPosition(7,y);
+                addPiece(B,b);
+                addPiece(W, w);
+                if (two){
+                    ChessPiece pieceB = new ChessPiece(ChessGame.TeamColor.BLACK, type);
+                    ChessPiece pieceW = new ChessPiece(ChessGame.TeamColor.WHITE, type);
+                    ChessPosition posB = new ChessPosition(0,j);
+                    ChessPosition posW = new ChessPosition(7,j);
+                    addPiece(posB,pieceB);
+                    addPiece(posW, pieceW);
+                }
+            }
+        }
+
     }
 
     @Override
