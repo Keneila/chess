@@ -52,6 +52,6 @@ public class ChessPosition {
         return "ChessPosition{" +
                 "row=" + row +
                 ", col=" + col +
-                '}';
+                "}";
     }
 }

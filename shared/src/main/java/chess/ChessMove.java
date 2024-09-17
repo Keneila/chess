@@ -65,6 +65,6 @@ public class ChessMove {
                 "startPosition=" + startPosition +
                 ", endPosition=" + endPosition +
                 ", promotionPiece=" + promotionPiece +
-                '}';
+                "} \n";
     }
 }
