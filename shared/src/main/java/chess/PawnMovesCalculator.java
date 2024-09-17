@@ -33,8 +33,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
                         allowed = false;
                     }
                 } else {
-                    if(board.getPiece(newPos) == null){
-                        allowed = false;
+                    if (!checkIfNotAllowed(board, position, newPos)) {
+                        if (board.getPiece(newPos) == null) {
+                            allowed = false;
+                        }
                     }
                 }
             }
