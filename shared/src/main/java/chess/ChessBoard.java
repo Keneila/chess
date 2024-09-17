@@ -45,12 +45,7 @@ public class ChessBoard {
     public void resetBoard() {
         squares = new ChessPiece[8][8];
         for (int i= 0; i< 8; i++){
-            ChessPiece pawnB = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
-            ChessPiece pawnW = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-            ChessPosition B = new ChessPosition(1,i);
-            ChessPosition W = new ChessPosition(6,i);
-            addPiece(B, pawnB);
-            addPiece(W, pawnW);
+            addBothPieces(ChessPiece.PieceType.PAWN, 1, 6, i);
         }
         for (ChessPiece.PieceType type : ChessPiece.PieceType.values()){
             if (type != ChessPiece.PieceType.PAWN){
@@ -79,27 +74,24 @@ public class ChessBoard {
                         j = 5;
                         break;
                 }
-                ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
-                ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
-                //System.out.println(b.toString());
-                ChessPosition B = new ChessPosition(0,y);
-                ChessPosition W = new ChessPosition(7,y);
-                //System.out.println(B.toString());
-                addPiece(B,b);
-                addPiece(W, w);
+                addBothPieces(type, 0, 7, y);
                 if (two){
-                    ChessPiece pieceB = new ChessPiece(ChessGame.TeamColor.BLACK, type);
-                    ChessPiece pieceW = new ChessPiece(ChessGame.TeamColor.WHITE, type);
-                    //System.out.println(pieceW.toString());
-                    ChessPosition posB = new ChessPosition(0,j);
-                    ChessPosition posW = new ChessPosition(7,j);
-                    //System.out.println(posW.toString());
-                    addPiece(posB,pieceB);
-                    addPiece(posW, pieceW);
+                    addBothPieces(type, 0, 7, j);
                 }
             }
         }
 
+    }
+
+    private void addBothPieces(ChessPiece.PieceType type, int x, int z, int y){
+        ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
+        ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
+        //System.out.println(b.toString());
+        ChessPosition B = new ChessPosition(x,y);
+        ChessPosition W = new ChessPosition(z,y);
+        //System.out.println(B.toString());
+        addPiece(B,b);
+        addPiece(W, w);
     }
 
     @Override

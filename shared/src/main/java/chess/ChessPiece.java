@@ -57,13 +57,16 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         PieceMovesCalculator calculator;
-        if (type == PieceType.BISHOP){
-          calculator = new BishopMovesCalculator();
-        } else if (type == PieceType.KING) {
-            calculator = new KingMovesCalculator();
-        } else {
-            calculator = new KingMovesCalculator();
+        switch (type){
+            case BISHOP -> calculator = new BishopMovesCalculator();
+            case ROOK -> calculator = new RookMovesCalculator();
+            case KNIGHT -> calculator = new KnightMovesCalculator();
+            case QUEEN -> calculator = new QueenMovesCalculator();
+            case KING -> calculator = new KingMovesCalculator();
+            case PAWN -> calculator = new PawnMovesCalculator();
+            case null -> throw new RuntimeException("No PieceType Set");
         }
+
         return calculator.pieceMoves(board, myPosition);
     }
 
