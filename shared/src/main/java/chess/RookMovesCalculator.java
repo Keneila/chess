@@ -23,7 +23,7 @@ public class RookMovesCalculator implements PieceMovesCalculator {
                     options.add(newMove);
                 }
             }
-            while (!checkIfHit(board,newPos)){
+            while (!checkIfHit(board,newPos) && !checkIfNotAllowed(board,position,newPos)){
                 newPos = new ChessPosition((newPos.getRow()+directions[i][0]), (newPos.getColumn()+directions[i][1]));
                 if (checkIfHit(board,newPos)){
                     if (!checkIfNotAllowed(board, position, newPos)){

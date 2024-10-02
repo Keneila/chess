@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 
 public class BishopMovesCalculator implements PieceMovesCalculator{
-    public BishopMovesCalculator() {
-    }
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         HashSet<ChessMove> options = new HashSet<>();
