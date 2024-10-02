@@ -56,15 +56,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        PieceMovesCalculator calculator;
+        PieceMoveCalculator calculator;
         switch (type){
-            case BISHOP -> calculator = new BishopMovesCalculator();
-            case ROOK -> calculator = new RookMovesCalculator();
-            case KNIGHT -> calculator = new KnightMovesCalculator();
-            case QUEEN -> calculator = new QueenMovesCalculator();
-            case KING -> calculator = new KingMovesCalculator();
-            case PAWN -> calculator = new PawnMovesCalculator();
-            case null -> throw new RuntimeException("No PieceType Set");
+            case KING -> calculator = new OneMoveCalculator(PieceType.KING);
+            case ROOK -> calculator = new LineMoveCalculator(PieceType.ROOK);
+            case BISHOP -> calculator = new LineMoveCalculator(PieceType.BISHOP);
+            case KNIGHT -> calculator = new OneMoveCalculator(PieceType.KNIGHT);
+            case PAWN -> calculator = new PawnMoveCalculator();
+            case QUEEN -> calculator = new LineMoveCalculator(PieceType.QUEEN);
+            case null, default -> calculator = null;
         }
 
         return calculator.pieceMoves(board, myPosition);
