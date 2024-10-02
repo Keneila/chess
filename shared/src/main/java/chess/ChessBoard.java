@@ -11,10 +11,25 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-
+    private ChessTeam White;
+    private ChessTeam Black;
     public ChessBoard() {
-        
+        White = new ChessTeam();
+        Black = new ChessTeam();
     }
+
+    public ChessTeam getTeam(ChessGame.TeamColor color) {
+        switch (color){
+            case BLACK -> {
+                return Black;
+            }
+            case WHITE -> {
+                return White;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -23,7 +38,24 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-
+        if (piece != null) {
+            if ((piece.getPieceType() == ChessPiece.PieceType.KING)){
+                switch (piece.getTeamColor()) {
+                    case WHITE -> White.setKingPos(position);
+                    case BLACK -> Black.setKingPos(position);
+                }
+            }
+            switch (piece.getTeamColor()) {
+                case WHITE -> White.addToPieces(position);
+                case BLACK -> Black.addToPieces(position);
+            }
+        } else {
+            if (White.getPieces().contains(position)){
+                White.removeFromPieces(position);
+            } else if (Black.getPieces().contains(position)){
+                Black.removeFromPieces(position);
+            }
+        }
         squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 

@@ -13,15 +13,12 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
-    private ChessPosition Wking;
-    private ChessPosition Bking;
+
 
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
         teamTurn = TeamColor.WHITE;
-        Wking = new ChessPosition(1,5);
-        Bking = new ChessPosition(8,5);
     }
 
     /**
@@ -76,15 +73,13 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        boolean check = false;
-        ChessPosition king;
-        switch (teamColor){
-            case BLACK -> king = Bking;
-            case WHITE -> king = Wking;
+        ChessPosition king = board.getTeam(teamColor).getKingPos();
+        TeamColor enemyColor = TeamColor.BLACK;
+        if (teamColor == TeamColor.BLACK){
+            enemyColor = TeamColor.WHITE;
         }
-
-
-        return check;
+        ChessTeam enemy = board.getTeam(enemyColor);
+        return enemy.canMoveTo(king,board);
     }
 
     /**
@@ -110,11 +105,7 @@ public class ChessGame {
 
 
     private void movingKing(ChessPosition pos){
-        if (teamTurn == TeamColor.WHITE){
-            Wking = pos;
-        } else {
-            Bking = pos;
-        }
+
     }
 
 
