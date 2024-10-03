@@ -94,67 +94,16 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)){
-            ChessPosition king = board.getTeam(teamColor).getKingPos();
-            TeamColor enemyColor = TeamColor.BLACK;
-            if (teamColor == TeamColor.BLACK){
-                enemyColor = TeamColor.WHITE;
-            }
-            ChessTeam enemy = board.getTeam(enemyColor);
-            var moves = enemy.getAllMovesToSpot(king, board);
-            var openings = spotsToBlock(moves);
-            for (ChessPosition pos : openings){
-                if (board.getTeam(teamColor).NotKingCanMoveTo(pos, board)){
+            ChessTeam team = board.getTeam(teamColor);
+            for (var pos : team.getPieces()){
+                if (!validMoves(pos).isEmpty()){
                     return false;
                 }
             }
             return true;
-
         } else {
             return false;
         }
-    }
-
-    public HashSet<ChessPosition> spotsToBlock(HashSet<ChessMove> attacks){
-        HashSet<ChessPosition> openings = new HashSet<>();
-        for (var move : attacks){
-            if (board.getPiece(move.getStartPosition()).getPieceType() != ChessPiece.PieceType.KNIGHT) {
-                int x = move.getStartPosition().getRow() - move.getEndPosition().getRow();
-                int y = move.getStartPosition().getColumn() - move.getEndPosition().getColumn();
-                int row;
-                int col;
-                if (x == 0){
-                    row = 0;
-                } else {
-                    row = abs(x) / x;
-                }
-                if (y == 0){
-                    col = 0;
-                } else {
-                    col = abs(y)/y;
-                    }
-                if (col != 0 && row != 0) {
-                    for (int i = move.getStartPosition().getRow(); i != move.getEndPosition().getRow(); i = i + row) {
-                        for (int j = move.getStartPosition().getColumn(); j != move.getEndPosition().getColumn(); j = j + col) {
-                            ChessPosition spot = new ChessPosition(i, j);
-                            openings.add(spot);
-                        }
-                    }
-                } else if (col != 0){
-                    for (int j = move.getStartPosition().getColumn(); j != move.getEndPosition().getColumn(); j = j + col) {
-                        ChessPosition spot = new ChessPosition(move.getStartPosition().getRow(), j);
-                        openings.add(spot);
-                    }
-                } else if (row != 0){
-                    for (int i = move.getStartPosition().getRow(); i != move.getEndPosition().getRow(); i = i + row) {
-                        ChessPosition spot = new ChessPosition(i, move.getEndPosition().getColumn());
-                        openings.add(spot);
-                    }
-                }
-
-
-            }
-        }
-        return openings;
     }
 
     /**
@@ -165,7 +114,17 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)){
+            ChessTeam team = board.getTeam(teamColor);
+            for (var pos : team.getPieces()){
+                if (!validMoves(pos).isEmpty()){
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

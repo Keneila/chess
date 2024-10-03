@@ -18,6 +18,16 @@ public class ChessBoard {
         Black = new ChessTeam();
     }
 
+    public ChessBoard(ChessBoard board) {
+        squares = board.squares.clone();
+        White = new ChessTeam();
+        White.setKingPos(board.White.getKingPos());
+        White.setPieces(board.White.getPieces());
+        Black = new ChessTeam();
+        Black.setKingPos(board.Black.getKingPos());
+        Black.setPieces(board.Black.getPieces());
+    }
+
     public ChessTeam getTeam(ChessGame.TeamColor color) {
         switch (color){
             case BLACK -> {
@@ -162,4 +172,6 @@ public class ChessBoard {
         }
         return s.toString();
     }
+
+
 }

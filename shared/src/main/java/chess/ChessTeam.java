@@ -27,6 +27,10 @@ public class ChessTeam {
         return pieces;
     }
 
+    public void setPieces(HashSet<ChessPosition> pieces) {
+        this.pieces = pieces;
+    }
+
     public void addToPieces(ChessPosition pos){
         pieces.add(pos);
     }
@@ -62,6 +66,16 @@ public class ChessTeam {
         }
         return moves;
     }
+
+    public HashSet<ChessMove> getAllMoves(ChessPosition position, ChessBoard board){
+        HashSet<ChessMove> moves = new HashSet<>();
+        for (var piece : pieces){
+            var pieceMoves = board.getPiece(piece).pieceMoves(board,piece);
+            moves.addAll(pieceMoves);
+        }
+        return moves;
+    }
+
 
 
 
