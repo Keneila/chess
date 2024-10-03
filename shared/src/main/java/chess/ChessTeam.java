@@ -38,6 +38,17 @@ public class ChessTeam {
         HashSet<ChessMove> moves = getAllMovesToSpot(position, board);
         return !moves.isEmpty();
     }
+    public boolean NotKingCanMoveTo(ChessPosition position, ChessBoard board){
+        HashSet<ChessMove> moves = getAllMovesToSpot(position, board);
+        if (!moves.isEmpty()){
+            for (var move : moves){
+                if (board.getPiece(move.getStartPosition()).getPieceType() != KING){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     public HashSet<ChessMove> getAllMovesToSpot(ChessPosition position, ChessBoard board){
         HashSet<ChessMove> moves = new HashSet<>();
@@ -51,4 +62,7 @@ public class ChessTeam {
         }
         return moves;
     }
+
+
+
 }

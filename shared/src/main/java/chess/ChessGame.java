@@ -1,7 +1,11 @@
 package chess;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+
+import static java.lang.Math.abs;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -96,11 +100,61 @@ public class ChessGame {
                 enemyColor = TeamColor.WHITE;
             }
             ChessTeam enemy = board.getTeam(enemyColor);
-            
+            var moves = enemy.getAllMovesToSpot(king, board);
+            var openings = spotsToBlock(moves);
+            for (ChessPosition pos : openings){
+                if (board.getTeam(teamColor).NotKingCanMoveTo(pos, board)){
+                    return false;
+                }
+            }
+            return true;
 
         } else {
             return false;
         }
+    }
+
+    public HashSet<ChessPosition> spotsToBlock(HashSet<ChessMove> attacks){
+        HashSet<ChessPosition> openings = new HashSet<>();
+        for (var move : attacks){
+            if (board.getPiece(move.getStartPosition()).getPieceType() != ChessPiece.PieceType.KNIGHT) {
+                int x = move.getStartPosition().getRow() - move.getEndPosition().getRow();
+                int y = move.getStartPosition().getColumn() - move.getEndPosition().getColumn();
+                int row;
+                int col;
+                if (x == 0){
+                    row = 0;
+                } else {
+                    row = abs(x) / x;
+                }
+                if (y == 0){
+                    col = 0;
+                } else {
+                    col = abs(y)/y;
+                    }
+                if (col != 0 && row != 0) {
+                    for (int i = move.getStartPosition().getRow(); i != move.getEndPosition().getRow(); i = i + row) {
+                        for (int j = move.getStartPosition().getColumn(); j != move.getEndPosition().getColumn(); j = j + col) {
+                            ChessPosition spot = new ChessPosition(i, j);
+                            openings.add(spot);
+                        }
+                    }
+                } else if (col != 0){
+                    for (int j = move.getStartPosition().getColumn(); j != move.getEndPosition().getColumn(); j = j + col) {
+                        ChessPosition spot = new ChessPosition(move.getStartPosition().getRow(), j);
+                        openings.add(spot);
+                    }
+                } else if (row != 0){
+                    for (int i = move.getStartPosition().getRow(); i != move.getEndPosition().getRow(); i = i + row) {
+                        ChessPosition spot = new ChessPosition(i, move.getEndPosition().getColumn());
+                        openings.add(spot);
+                    }
+                }
+
+
+            }
+        }
+        return openings;
     }
 
     /**
