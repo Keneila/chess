@@ -55,7 +55,7 @@ public class ChessTeam {
         for (var piece : pieces){
             var pieceMoves = board.getPiece(piece).pieceMoves(board,piece);
             for (var move : pieceMoves){
-                if(move.getEndPosition() == position){
+                if(move.getEndPosition().equals(position)){
                     moves.add(move);
                 }
             }
