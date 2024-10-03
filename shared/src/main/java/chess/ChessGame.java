@@ -89,7 +89,18 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)){
+            ChessPosition king = board.getTeam(teamColor).getKingPos();
+            TeamColor enemyColor = TeamColor.BLACK;
+            if (teamColor == TeamColor.BLACK){
+                enemyColor = TeamColor.WHITE;
+            }
+            ChessTeam enemy = board.getTeam(enemyColor);
+            
+
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -103,10 +114,6 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
-
-    private void movingKing(ChessPosition pos){
-
-    }
 
 
 

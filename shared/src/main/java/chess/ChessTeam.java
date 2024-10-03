@@ -34,22 +34,21 @@ public class ChessTeam {
         pieces.remove(pos);
     }
 
-    public HashSet<ChessPosition> getAllMoves(ChessBoard board){
-        HashSet<ChessPosition> moves = new HashSet<>();
-        for(ChessPosition piece : pieces){
+    public boolean canMoveTo(ChessPosition position, ChessBoard board){
+        HashSet<ChessMove> moves = getAllMovesToSpot(position, board);
+        return !moves.isEmpty();
+    }
+
+    public HashSet<ChessMove> getAllMovesToSpot(ChessPosition position, ChessBoard board){
+        HashSet<ChessMove> moves = new HashSet<>();
+        for (var piece : pieces){
             var pieceMoves = board.getPiece(piece).pieceMoves(board,piece);
             for (var move : pieceMoves){
-                moves.add(move.getEndPosition());
+                if(move.getEndPosition() == position){
+                    moves.add(move);
+                }
             }
         }
         return moves;
-    }
-    public boolean canMoveTo(ChessPosition position, ChessBoard board){
-        boolean can = false;
-        HashSet<ChessPosition> moves = getAllMoves(board);
-        if (moves.contains(position)){
-            can = true;
-        }
-        return can;
     }
 }
