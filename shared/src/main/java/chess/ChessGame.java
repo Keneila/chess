@@ -1,11 +1,10 @@
 package chess;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-import static java.lang.Math.abs;
+
 
 /**
  * For a class that can manage a chess game, making moves on a board

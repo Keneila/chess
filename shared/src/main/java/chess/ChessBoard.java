@@ -140,10 +140,8 @@ public class ChessBoard {
     private void addBothPieces(ChessPiece.PieceType type, int x, int z, int y){
         ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
         ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
-        //System.out.println(b.toString());
         ChessPosition W = new ChessPosition(x,y);
         ChessPosition B = new ChessPosition(z,y);
-        //System.out.println(B.toString());
         addPiece(B,b);
         addPiece(W, w);
     }
