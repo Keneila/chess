@@ -57,8 +57,34 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece p = board.getPiece(startPosition);
+        if(p != null) {
+            Collection<ChessMove> allMoves = p.pieceMoves(board, startPosition);
+            HashSet<ChessMove> valid = new HashSet<>();
+            for (var move : allMoves) {
+                //ChessBoard testBoard =
+                ChessBoard testBoard = new ChessBoard(board);
+                testBoard.addPiece(startPosition, null);
+                if (move.getPromotionPiece() == null) {
+                    testBoard.addPiece(move.getEndPosition(), p);
+                } else {
+                    ChessPiece newP = new ChessPiece(p.getTeamColor(), move.getPromotionPiece());
+                    testBoard.addPiece(move.getEndPosition(), newP);
+                }
+                if (!isInCheck(p.getTeamColor(), testBoard)) {
+                    System.out.print("Not In Check");
+                    valid.add(move);
+                }
+                testBoard.addPiece(move.getEndPosition(), null);
+                testBoard.addPiece(move.getStartPosition(), p);
+            }
+            return valid;
+        } else {
+            return null;
+        }
+
     }
+
 
     /**
      * Makes a move in a chess game
@@ -84,6 +110,18 @@ public class ChessGame {
         }
         ChessTeam enemy = board.getTeam(enemyColor);
         return enemy.canMoveTo(king,board);
+    }
+
+    public boolean isInCheck(TeamColor teamColor, ChessBoard nBoard) {
+        ChessPosition king = nBoard.getTeam(teamColor).getKingPos();
+        TeamColor enemyColor = TeamColor.BLACK;
+        if (teamColor == TeamColor.BLACK){
+            enemyColor = TeamColor.WHITE;
+        }
+        ChessTeam enemy = nBoard.getTeam(enemyColor);
+        System.out.print(board);
+        System.out.print(nBoard);
+        return enemy.canMoveTo(king,nBoard);
     }
 
     /**

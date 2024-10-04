@@ -8,11 +8,21 @@ import java.util.Map;
 import static chess.ChessPiece.PieceType.*;
 
 public class ChessTeam {
-    private ChessPosition kingPos;
+    private ChessPosition kingPos = null;
     private HashSet<ChessPosition> pieces;
 
     public ChessTeam() {
         this.pieces = new HashSet<>();
+    }
+
+    public ChessTeam(ChessTeam newT) {
+        if (newT.getKingPos() != null) {
+            this.kingPos = new ChessPosition(newT.getKingPos().getRow(), newT.getKingPos().getColumn());
+        }
+        this.pieces = new HashSet<>();
+        for (var p : newT.getPieces()){
+            pieces.add(p);
+        }
     }
 
     public void setKingPos(ChessPosition kingPos) {

@@ -3,6 +3,7 @@ package chess;
 import java.util.Arrays;
 import java.util.Objects;
 
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -19,13 +20,13 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard board) {
-        squares = board.squares.clone();
-        White = new ChessTeam();
-        White.setKingPos(board.White.getKingPos());
-        White.setPieces(board.White.getPieces());
-        Black = new ChessTeam();
-        Black.setKingPos(board.Black.getKingPos());
-        Black.setPieces(board.Black.getPieces());
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                squares[i][j] = board.getSquares()[i][j];
+            }
+        }
+        White = new ChessTeam(board.White);
+        Black = new ChessTeam(board.Black);
     }
 
     public ChessTeam getTeam(ChessGame.TeamColor color) {
@@ -41,6 +42,10 @@ public class ChessBoard {
     }
 
 
+    public ChessPiece[][] getSquares() {
+        return squares;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -48,6 +53,13 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
+        ChessPiece orig = squares[position.getRow()-1][position.getColumn()-1];
+        if (orig != null){
+            switch(orig.getTeamColor()){
+                case BLACK -> Black.removeFromPieces(position);
+                case WHITE -> White.removeFromPieces(position);
+            }
+        }
         if (piece != null) {
             if ((piece.getPieceType() == ChessPiece.PieceType.KING)){
                 switch (piece.getTeamColor()) {
@@ -152,10 +164,10 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int x = 0;
-        int y = 0;
-        for (ChessPiece[] r :  squares){
-            x=0;
+        int x = 1;
+        int y = 8;
+        for (ChessPiece[] r : Arrays.asList(squares).reversed()){
+            x=1;
             s.append("\n");
             for(ChessPiece p : r){
                 if (p != null){
@@ -163,13 +175,14 @@ public class ChessBoard {
                     s.append(" ");
                 }
                 else {
-                    s.append("(" + x + "," + y + ") ");
+                    s.append("(" + (y) + "," + (x) + ") ");
                 }
                 x++;
 
             }
-            y++;
+            y--;
         }
+        s.append("\n\n");
         return s.toString();
     }
 
