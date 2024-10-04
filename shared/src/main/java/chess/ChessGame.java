@@ -62,7 +62,6 @@ public class ChessGame {
             Collection<ChessMove> allMoves = p.pieceMoves(board, startPosition);
             HashSet<ChessMove> valid = new HashSet<>();
             for (var move : allMoves) {
-                //ChessBoard testBoard =
                 ChessBoard testBoard = new ChessBoard(board);
                 testBoard.addPiece(startPosition, null);
                 if (move.getPromotionPiece() == null) {
@@ -72,7 +71,6 @@ public class ChessGame {
                     testBoard.addPiece(move.getEndPosition(), newP);
                 }
                 if (!isInCheck(p.getTeamColor(), testBoard)) {
-                    System.out.print("Not In Check");
                     valid.add(move);
                 }
                 testBoard.addPiece(move.getEndPosition(), null);
@@ -93,7 +91,33 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece p = board.getPiece(move.getStartPosition());
+        if (p == null){
+            throw new InvalidMoveException();
+        }
+        if (p.getTeamColor() != teamTurn){
+            throw new InvalidMoveException();
+        }
+        var valid = validMoves(move.getStartPosition());
+        if (valid == null){
+            throw new InvalidMoveException();
+        }
+
+        if (valid.contains(move)){
+            board.addPiece(move.getStartPosition(), null);
+            if (move.getPromotionPiece() == null) {
+                board.addPiece(move.getEndPosition(), p);
+            } else {
+                ChessPiece newP = new ChessPiece(p.getTeamColor(), move.getPromotionPiece());
+                board.addPiece(move.getEndPosition(), newP);
+            }
+            switch (teamTurn){
+                case WHITE -> teamTurn = TeamColor.BLACK;
+                case BLACK -> teamTurn = TeamColor.WHITE;
+            }
+        } else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**
@@ -119,8 +143,6 @@ public class ChessGame {
             enemyColor = TeamColor.WHITE;
         }
         ChessTeam enemy = nBoard.getTeam(enemyColor);
-        System.out.print(board);
-        System.out.print(nBoard);
         return enemy.canMoveTo(king,nBoard);
     }
 
