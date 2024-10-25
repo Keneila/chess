@@ -1,4 +1,4 @@
-package chess;
+package model;
 
 /**
  * A User object saves all the basic data of the user

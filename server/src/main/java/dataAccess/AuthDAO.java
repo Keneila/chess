@@ -1,6 +1,6 @@
 package dataAccess;
 
-import chess.AuthData;
+import model.AuthData;
 
 import java.util.Collection;
 
