@@ -4,12 +4,15 @@ import model.AuthData;
 import model.UserData;
 import com.google.gson.Gson;
 import spark.*;
+import service.Service;
 
 import java.util.HashMap;
 
 public class Server {
+    private  Service service;
 
     public int run(int desiredPort) {
+        service = new Service();
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -26,7 +29,8 @@ public class Server {
 
     private Object register(Request request, Response response) {
         var user = new Gson().fromJson(request.body(), UserData.class);
-        return new Gson().toJson(new AuthData("ergerged", user.username()));
+        AuthData r = service.register(user);
+        return new Gson().toJson(r);
     }
 
     public void stop() {
