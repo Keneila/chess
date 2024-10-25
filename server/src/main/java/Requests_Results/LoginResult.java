@@ -1,6 +1,7 @@
 package Requests_Results;
 
-import Models.Authtoken;
+
+import chess.AuthData;
 
 /**
  * The result of completing the login service - saves things to return to the user
@@ -22,7 +23,7 @@ public class LoginResult {
     /**
      * the Authtoken containing the authtoken and username of the logged-in User
      */
-    private Authtoken authtoken;
+    private AuthData authtoken;
 
     /**
      * creates the result object with the desired data from the database - and a sign of its completion status
@@ -31,7 +32,7 @@ public class LoginResult {
      * @param personID
      * @param authtoken
      */
-    public LoginResult(String message, boolean success, String personID, Authtoken authtoken) {
+    public LoginResult(String message, boolean success, String personID, AuthData authtoken) {
         this.message = message;
         this.success = success;
         this.personID = personID;
@@ -62,11 +63,11 @@ public class LoginResult {
         this.personID = personID;
     }
 
-    public Authtoken getAuthtoken() {
+    public AuthData getAuthtoken() {
         return authtoken;
     }
 
-    public void setAuthtoken(Authtoken authtoken) {
+    public void setAuthtoken(AuthData authtoken) {
         this.authtoken = authtoken;
     }
 }

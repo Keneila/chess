@@ -1,6 +1,5 @@
 package Requests_Results;
 
-import Models.Authtoken;
 
 /**
  * The result of completing the registration service - saves things to return to the user
