@@ -3,6 +3,7 @@ package server;
 import model.AuthData;
 import model.UserData;
 import com.google.gson.Gson;
+import service.ErrorMessage;
 import spark.*;
 import service.Service;
 
@@ -28,10 +29,16 @@ public class Server {
         return Spark.port();
     }
 
-    private Object register(Request request, Response response) throws Exception {
+    private Object register(Request request, Response res) throws Exception {
         var user = new Gson().fromJson(request.body(), UserData.class);
-        AuthData r = service.register(user);
-        return new Gson().toJson(r);
+        try {
+            AuthData r = service.register(user);
+            return new Gson().toJson(r);
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            //res.body(e.getMessage());
+            return new Gson().toJson(e.getMessage());
+        }
     }
 
     public void stop() {
@@ -39,7 +46,13 @@ public class Server {
         Spark.awaitStop();
     }
     private Object deleteDB(Request rec, Response res){
-        res.status(200);
-        return new Gson().toJson(new HashMap<>());
+        try {
+            service.clearALL();
+            return new Gson().toJson(new HashMap<>());
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            //res.body(e.getMessage());
+            return new Gson().toJson(e);
+        }
     }
 }

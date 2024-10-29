@@ -1,15 +1,16 @@
 package dataAccess;
 
 import model.AuthData;
+import model.GameData;
+import model.UserData;
 
 import java.util.Collection;
 
 public interface AuthDAO {
-    void insert (AuthData auth) throws DataAccessException;
-    Collection<AuthData> listtokens() throws DataAccessException;
-    AuthData findByUserName(String username) throws DataAccessException;
-    AuthData findByToken(String token) throws DataAccessException;
-    void delete(String token) throws DataAccessException;
-    void clear() throws DataAccessException;
+    public void createAuth(AuthData auth) throws DataAccessException;
+    public AuthData findAuth(String token) throws DataAccessException;
+    public void deleteAuth(String token) throws DataAccessException;
+    public void clearTable() throws DataAccessException;
+
 
 }

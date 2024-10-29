@@ -5,10 +5,13 @@ import model.UserData;
 
 public class Service {
 
-    public AuthData register(UserData user) throws Exception {
-        if (user.username() != null && user.username().length() > 0) {
+    public AuthData register(UserData user) throws ErrorMessage {
+        if (user.username() != null && !user.username().isEmpty()) {
             return new AuthData("ergerged", user.username());
         }
-        throw new Exception("bad param");
+        throw new ErrorMessage(400, "Error: bad request");
+    }
+
+    public void clearALL() throws ErrorMessage {
     }
 }
