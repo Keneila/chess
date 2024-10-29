@@ -1,38 +1,45 @@
 package dataAccess;
 
 import model.GameData;
+import model.UserData;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class MemGameDAO implements GameDAO {
+    private int nextId = 1;
+    final private HashMap<Integer, GameData> games = new HashMap<>();
     @Override
     public void clearTable() throws DataAccessException {
-
+        games.clear();
     }
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return List.of();
+        return games.values();
     }
 
     @Override
-    public void createGame(GameData game) throws DataAccessException {
-
+    public GameData createGame(GameData game) throws DataAccessException {
+        game = new GameData(nextId++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+        games.put(game.gameID(), game);
+        return game;
     }
 
     @Override
-    public GameData findGame(String gameID) throws DataAccessException {
-        return null;
+    public GameData findGame(int gameID) throws DataAccessException {
+        return games.get(gameID);
     }
 
     @Override
-    public void deleteGame(String gameID) throws DataAccessException {
-
+    public void deleteGame(int gameID) throws DataAccessException {
+        games.remove(gameID);
     }
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        games.remove(game.gameID());
+        games.put(game.gameID(), game);
     }
 }
