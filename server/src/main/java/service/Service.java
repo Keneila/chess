@@ -1,12 +1,11 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
-import model.AuthData;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -88,6 +87,29 @@ public class Service {
                     throw new ErrorMessage(401, "Error: unauthorized");
                 }
                 authDAO.deleteAuth(token);
+            } catch (DataAccessException e) {
+                throw new ErrorMessage(500, "Error: Data Access Error on Logout");
+            }
+        } else {
+            throw new ErrorMessage(401, "Error: unauthorized");
+        }
+    }
+
+    public int createGame(CreateGameRequest req) throws ErrorMessage{
+        if(req.gameName() == null || req.gameName().isEmpty()){
+            throw new ErrorMessage(400, "Error: bad request");
+        }
+        if(req.token() != null && !req.token().isEmpty()){
+            try {
+                if(authDAO.findAuth(req.token()) == null){
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                }
+                ChessGame newGame = new ChessGame();
+                GameData game = new GameData(0,null,null, req.gameName(), newGame);
+                GameData created = gameDAO.createGame(game);
+                System.out.print(created.gameID());
+                return created.gameID();
+
             } catch (DataAccessException e) {
                 throw new ErrorMessage(500, "Error: Data Access Error on Logout");
             }

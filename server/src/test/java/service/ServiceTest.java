@@ -80,9 +80,6 @@ public class ServiceTest {
         var user = new UserData("Name", "pass", "email");
         AuthData r = s.register(user);
         s.clearALL();
-        //s.register(user);
-        //Assertions.assertEquals(user.username(),r.username());
-        //Assertions.assertNotNull(r.authToken());
     }
 
 }
