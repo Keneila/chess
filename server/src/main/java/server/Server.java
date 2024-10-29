@@ -2,6 +2,7 @@ package server;
 
 import dataAccess.*;
 import model.AuthData;
+import model.LoginRequest;
 import model.UserData;
 import com.google.gson.Gson;
 import service.ErrorMessage;
@@ -26,6 +27,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::deleteDB);
         Spark.post("/user", this::register);
+        Spark.post("/session", this::login);
         Spark.exception(ErrorMessage.class, this::exeptionHandler);
         //Spark.exception();
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -33,6 +35,18 @@ public class Server {
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object login(Request req, Response res) {
+        var user = new Gson().fromJson(req.body(), LoginRequest.class);
+        try{
+            AuthData r = service.login(user);
+            return new Gson().toJson(r);
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            Message err = new Message(e.getMessage());
+            return new Gson().toJson(err);
+        }
     }
 
     private void exeptionHandler(ErrorMessage em, Request req, Response res) {

@@ -5,8 +5,10 @@ import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 import model.AuthData;
+import model.LoginRequest;
 import model.UserData;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class Service {
@@ -20,11 +22,11 @@ public class Service {
         this.gameDAO = gameDAO;
     }
 
+
     public AuthData register(UserData user) throws ErrorMessage {
-        if (user.password() == null || user.email() == null){
-            throw new ErrorMessage(400, "Error: bad request");
-        }
-        if (user.username() != null && !user.username().isEmpty() && !user.email().isEmpty() && !user.password().isEmpty()) {
+        if (user.password() != null && user.email() != null && user.username()
+                != null && !user.username().isEmpty() && !user.email().isEmpty() &&
+                !user.password().isEmpty()) {
             try {
                 if(userDAO.findUser(user.username()) == null){
                     userDAO.createUser(user);
@@ -36,7 +38,7 @@ public class Service {
                     throw new ErrorMessage(403, "Error: already taken");
                 }
             } catch(DataAccessException e){
-                throw new ErrorMessage(500, "Something went wrong with DAOs");
+                throw new ErrorMessage(500, "Error: Something went wrong with DAOs");
             }
         }
         throw new ErrorMessage(400, "Error: bad request");
@@ -48,11 +50,34 @@ public class Service {
             gameDAO.clearTable();
             authDAO.clearTable();
         } catch (DataAccessException e){
-            throw new ErrorMessage(500, "Data Access Error For Clear");
+            throw new ErrorMessage(500, "Error: Data Access Error For Clear");
         }
     }
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
+    }
+
+    public AuthData login(LoginRequest user) throws ErrorMessage {
+        if (user.password() != null && user.username() != null && !user.username().isEmpty() && !user.password().isEmpty()) {
+            try {
+                UserData data = userDAO.findUser(user.username());
+                if(data == null){
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                } else {
+                    if (Objects.equals(data.password(), user.password())) {
+                        AuthData auth = new AuthData(generateToken(), user.username());
+                        authDAO.createAuth(auth);
+                        return auth;
+                    }
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                }
+            } catch (DataAccessException e){
+                throw new ErrorMessage(500, "Error: Data Access Error on Login");
+                }
+        } else {
+            throw new ErrorMessage(401, "Error: unauthorized");
+        }
+
     }
 }
