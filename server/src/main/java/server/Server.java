@@ -28,6 +28,7 @@ public class Server {
         Spark.delete("/db", this::deleteDB);
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
+        Spark.delete("/session", this::logout);
         Spark.exception(ErrorMessage.class, this::exeptionHandler);
         //Spark.exception();
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -35,6 +36,18 @@ public class Server {
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object logout(Request req, Response res) {
+        var token = req.headers("authorization");
+        try{
+            service.logout(token);
+            return new Gson().toJson(new HashMap<>());
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            Message err = new Message(e.getMessage());
+            return new Gson().toJson(err);
+        }
     }
 
     private Object login(Request req, Response res) {
@@ -69,6 +82,7 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
+
     private Object deleteDB(Request rec, Response res){
         try {
             service.clearALL();

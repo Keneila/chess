@@ -80,4 +80,19 @@ public class Service {
         }
 
     }
+
+    public void logout(String token) throws ErrorMessage{
+        if(token != null && !token.isEmpty()){
+            try {
+                if(authDAO.findAuth(token) == null){
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                }
+                authDAO.deleteAuth(token);
+            } catch (DataAccessException e) {
+                throw new ErrorMessage(500, "Error: Data Access Error on Logout");
+            }
+        } else {
+            throw new ErrorMessage(401, "Error: unauthorized");
+        }
+    }
 }
