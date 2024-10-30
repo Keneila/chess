@@ -1,19 +1,20 @@
 package service;
 
 import dataAccess.*;
-import model.AuthData;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+
 public class ServiceTest {
     private static Service s;
+    GameDAO gameDAO;
     @BeforeEach
     public void setUp(){
         UserDAO userDAO = new MemUserDAO();
-        GameDAO gameDAO = new MemGameDAO();
+        gameDAO = new MemGameDAO();
         AuthDAO authDAO = new MemAuthDAO();
         s = new Service(userDAO,authDAO,gameDAO);
     }
@@ -76,10 +77,80 @@ public class ServiceTest {
     }
 
     @Test
+    public void ListTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        s.createGame(req);
+        CreateGameRequest req2 = new CreateGameRequest("GameName34", auth.authToken());
+        s.createGame(req2);
+        Collection<GameData> games = s.listGames(auth.authToken());
+        Assertions.assertEquals(2, games.size());
+    }
+
+    @Test
+    public void ListFailTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        s.createGame(req);
+        CreateGameRequest req2 = new CreateGameRequest("GameName34", auth.authToken());
+        s.createGame(req2);
+        Assertions.assertThrows(Exception.class, () ->  s.listGames("auth.authToken()"));
+    }
+
+    @Test
+    public void CreateTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        Assertions.assertNotNull(gameDAO.findGame(s.createGame(req)));
+    }
+
+    @Test
+    public void CreateFailTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", "auth.authToken()");
+        Assertions.assertThrows(Exception.class, () ->  s.createGame(req));
+        CreateGameRequest req2 = new CreateGameRequest("", auth.authToken());
+        Assertions.assertThrows(Exception.class, () ->  s.createGame(req2));
+    }
+
+    @Test
+    public void JoinTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        int id = s.createGame(req);
+        Assertions.assertDoesNotThrow(() -> s.joinGame(auth.authToken(),"BLACK",id));
+        Assertions.assertEquals(auth.username(), gameDAO.findGame(id).blackUsername());
+    }
+
+    @Test
+    public void JoinFailTest() throws Exception {
+        var user = new UserData("Name", "pass", "email");
+        AuthData auth = s.register(user);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        int id = s.createGame(req);
+        Assertions.assertThrows(Exception.class,() -> s.joinGame("auth.authToken()","BLACK",id));
+        Assertions.assertThrows(Exception.class,() -> s.joinGame(auth.authToken(),"BACK",id));
+        Assertions.assertThrows(Exception.class,() -> s.joinGame(auth.authToken(),"BLACK",3478));
+    }
+
+    @Test
     public void clearTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
-        AuthData r = s.register(user);
+        AuthData auth = s.register(user);
+        var user2 = new UserData("Name4", "pa3ss", "emai5l");
+        AuthData auth2 = s.register(user2);
+        CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
+        s.createGame(req);
+        CreateGameRequest req2 = new CreateGameRequest("GameName34", auth2.authToken());
+        s.createGame(req2);
         s.clearALL();
+        Assertions.assertThrows(Exception.class,() -> s.listGames(auth.authToken()));
+        Assertions.assertThrows(Exception.class,() -> s.login(new LoginRequest(user.username(),user.password())));
     }
 
 }

@@ -8,7 +8,6 @@ import dataAccess.UserDAO;
 import model.*;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
