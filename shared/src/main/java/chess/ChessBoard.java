@@ -12,11 +12,11 @@ import java.util.Objects;
  */
 public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    private ChessTeam White;
-    private ChessTeam Black;
+    private ChessTeam white;
+    private ChessTeam black;
     public ChessBoard() {
-        White = new ChessTeam();
-        Black = new ChessTeam();
+        white = new ChessTeam();
+        black = new ChessTeam();
     }
 
     public ChessBoard(ChessBoard board) {
@@ -25,17 +25,17 @@ public class ChessBoard {
                 squares[i][j] = board.getSquares()[i][j];
             }
         }
-        White = new ChessTeam(board.White);
-        Black = new ChessTeam(board.Black);
+        white = new ChessTeam(board.white);
+        black = new ChessTeam(board.black);
     }
 
     public ChessTeam getTeam(ChessGame.TeamColor color) {
         switch (color){
             case BLACK -> {
-                return Black;
+                return black;
             }
             case WHITE -> {
-                return White;
+                return white;
             }
         }
         return null;
@@ -56,26 +56,26 @@ public class ChessBoard {
         ChessPiece orig = squares[position.getRow()-1][position.getColumn()-1];
         if (orig != null){
             switch(orig.getTeamColor()){
-                case BLACK -> Black.removeFromPieces(position);
-                case WHITE -> White.removeFromPieces(position);
+                case BLACK -> black.removeFromPieces(position);
+                case WHITE -> white.removeFromPieces(position);
             }
         }
         if (piece != null) {
             if ((piece.getPieceType() == ChessPiece.PieceType.KING)){
                 switch (piece.getTeamColor()) {
-                    case WHITE -> White.setKingPos(position);
-                    case BLACK -> Black.setKingPos(position);
+                    case WHITE -> white.setKingPos(position);
+                    case BLACK -> black.setKingPos(position);
                 }
             }
             switch (piece.getTeamColor()) {
-                case WHITE -> White.addToPieces(position);
-                case BLACK -> Black.addToPieces(position);
+                case WHITE -> white.addToPieces(position);
+                case BLACK -> black.addToPieces(position);
             }
         } else {
-            if (White.getPieces().contains(position)){
-                White.removeFromPieces(position);
-            } else if (Black.getPieces().contains(position)){
-                Black.removeFromPieces(position);
+            if (white.getPieces().contains(position)){
+                white.removeFromPieces(position);
+            } else if (black.getPieces().contains(position)){
+                black.removeFromPieces(position);
             }
         }
         squares[position.getRow()-1][position.getColumn()-1] = piece;
@@ -140,10 +140,10 @@ public class ChessBoard {
     private void addBothPieces(ChessPiece.PieceType type, int x, int z, int y){
         ChessPiece b = new ChessPiece(ChessGame.TeamColor.BLACK, type);
         ChessPiece w = new ChessPiece(ChessGame.TeamColor.WHITE, type);
-        ChessPosition W = new ChessPosition(x,y);
-        ChessPosition B = new ChessPosition(z,y);
-        addPiece(B,b);
-        addPiece(W, w);
+        ChessPosition wPos = new ChessPosition(x,y);
+        ChessPosition bPos = new ChessPosition(z,y);
+        addPiece(bPos,b);
+        addPiece(wPos, w);
     }
 
     @Override

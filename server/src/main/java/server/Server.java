@@ -1,6 +1,6 @@
 package server;
 
-import dataAccess.*;
+import dataaccess.*;
 import model.*;
 import com.google.gson.Gson;
 import service.ErrorMessage;
@@ -10,7 +10,6 @@ import service.Service;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Server {
     private  Service service;

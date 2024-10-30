@@ -1,10 +1,6 @@
-package dataAccess;
+package dataaccess;
 
 import model.AuthData;
-import model.GameData;
-import model.UserData;
-
-import java.util.Collection;
 
 public interface AuthDAO {
     public void createAuth(AuthData auth) throws DataAccessException;

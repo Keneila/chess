@@ -1,6 +1,6 @@
 package service;
 
-import dataAccess.*;
+import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +77,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void ListTest() throws Exception {
+    public void listTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
@@ -89,7 +89,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void ListFailTest() throws Exception {
+    public void listFailTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
@@ -100,7 +100,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void CreateTest() throws Exception {
+    public void createTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
@@ -108,7 +108,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void CreateFailTest() throws Exception {
+    public void createFailTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", "auth.authToken()");
@@ -118,7 +118,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void JoinTest() throws Exception {
+    public void joinTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());
@@ -128,7 +128,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void JoinFailTest() throws Exception {
+    public void joinFailTest() throws Exception {
         var user = new UserData("Name", "pass", "email");
         AuthData auth = s.register(user);
         CreateGameRequest req = new CreateGameRequest("GameName", auth.authToken());

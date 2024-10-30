@@ -1,8 +1,7 @@
-package dataAccess;
+package dataaccess;
 
 import model.UserData;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemUserDAO implements UserDAO{
