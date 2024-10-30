@@ -153,16 +153,19 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)){
-            ChessTeam team = board.getTeam(teamColor);
-            for (var pos : team.getPieces()){
-                if (!validMoves(pos).isEmpty()){
-                    return false;
-                }
-            }
-            return true;
+            return isIn(teamColor);
         } else {
             return false;
         }
+    }
+    public boolean isIn(TeamColor teamColor){
+        ChessTeam team = board.getTeam(teamColor);
+        for (var pos : team.getPieces()) {
+            if (!validMoves(pos).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -174,13 +177,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)){
-            ChessTeam team = board.getTeam(teamColor);
-            for (var pos : team.getPieces()){
-                if (!validMoves(pos).isEmpty()){
-                    return false;
-                }
-            }
-            return true;
+            return isIn(teamColor);
         } else {
             return false;
         }

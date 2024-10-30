@@ -22,7 +22,11 @@ public class Service {
         this.gameDAO = gameDAO;
     }
 
-
+    /**
+     * Registers User
+     * @param user
+     * @return AuthData for the useable token
+     */
     public AuthData register(UserData user) throws ErrorMessage {
         if (user.password() != null && user.email() != null && user.username()
                 != null && !user.username().isEmpty() && !user.email().isEmpty() &&
@@ -44,6 +48,10 @@ public class Service {
         throw new ErrorMessage(400, "Error: bad request");
     }
 
+    /**
+     * Clears each DAO's Table
+     * @return nothing. If something goes wrong it throws an Error
+     */
     public void clearALL() throws ErrorMessage {
         try {
             userDAO.clearTable();
@@ -58,6 +66,12 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
+    /**
+     * Logs User In by creating an Authtoken
+     * and checking the username and password ro see it they exist.
+     * @param user
+     * @return AuthData for the useable token
+     */
     public AuthData login(LoginRequest user) throws ErrorMessage {
         if (user.password() != null && user.username() != null && !user.username().isEmpty() && !user.password().isEmpty()) {
             try {
@@ -81,6 +95,11 @@ public class Service {
 
     }
 
+    /**
+     * Logs Out the User by deleting the authtoken
+     * @param token
+     * @return nothing just an error if messed up
+     */
     public void logout(String token) throws ErrorMessage{
         if(token != null && !token.isEmpty()){
             try {
@@ -96,6 +115,11 @@ public class Service {
         }
     }
 
+    /**
+     * Creates A New Game and Adds to DataBase
+     * @param req has the gameName and Authtoken information
+     * @return gameID or an Error Message
+     */
     public int createGame(CreateGameRequest req) throws ErrorMessage{
         if(req.gameName() == null || req.gameName().isEmpty()){
             throw new ErrorMessage(400, "Error: bad request");
@@ -118,6 +142,11 @@ public class Service {
         }
     }
 
+    /**
+     * Lists All Games in Database
+     * @param token to authorize
+     * @return The List of Games as a Collection
+     */
     public Collection<GameData> listGames(String token) throws ErrorMessage{
         if(token != null && !token.isEmpty()){
             try {
@@ -133,6 +162,13 @@ public class Service {
         }
     }
 
+    /**
+     * Updates Game to Include User as a Black or White Player
+     * @param token
+     * @param gameID
+     * @param playerColor
+     * @return nothing except a possible error message
+     */
     public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
         if(token != null && !token.isEmpty()){
             try {
