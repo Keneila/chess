@@ -1,17 +1,16 @@
 package server;
 
 import dataAccess.*;
-import model.AuthData;
-import model.CreateGameRequest;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 import com.google.gson.Gson;
 import service.ErrorMessage;
 import service.Message;
 import spark.*;
 import service.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Server {
     private  Service service;
@@ -31,6 +30,8 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
+        Spark.get("/game", this::listGames);
+        Spark.put("/game", this::joinGame);
         Spark.exception(ErrorMessage.class, this::exeptionHandler);
         //Spark.exception();
         //This line initializes the server and can be removed once you have a functioning endpoint 
@@ -38,6 +39,33 @@ public class Server {
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object joinGame(Request req, Response res) {
+        var token = req.headers("authorization");
+        var info = new Gson().fromJson(req.body(), JoinGameRequest.class);
+        try{
+            service.joinGame(token, info.playerColor(), info.gameID());
+            return new Gson().toJson(new HashMap<>());
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            Message err = new Message(e.getMessage());
+            return new Gson().toJson(err);
+        }
+    }
+
+    private Object listGames(Request req, Response res) {
+        var token = req.headers("authorization");
+        try{
+            Collection<GameData> data = service.listGames(token);
+            var list = new HashMap<String, Collection<GameData>>();
+            list.put("games",data);
+            return new Gson().toJson(list);
+        } catch (ErrorMessage e){
+            res.status(e.getCode());
+            Message err = new Message(e.getMessage());
+            return new Gson().toJson(err);
+        }
     }
 
     private Object createGame(Request req, Response res) {

@@ -7,6 +7,8 @@ import dataAccess.GameDAO;
 import dataAccess.UserDAO;
 import model.*;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -107,9 +109,57 @@ public class Service {
                 ChessGame newGame = new ChessGame();
                 GameData game = new GameData(0,null,null, req.gameName(), newGame);
                 GameData created = gameDAO.createGame(game);
-                System.out.print(created.gameID());
                 return created.gameID();
 
+            } catch (DataAccessException e) {
+                throw new ErrorMessage(500, "Error: Data Access Error on Logout");
+            }
+        } else {
+            throw new ErrorMessage(401, "Error: unauthorized");
+        }
+    }
+
+    public Collection<GameData> listGames(String token) throws ErrorMessage{
+        if(token != null && !token.isEmpty()){
+            try {
+                if(authDAO.findAuth(token) == null){
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                }
+                return gameDAO.listGames();
+            } catch (DataAccessException e) {
+                throw new ErrorMessage(500, "Error: Data Access Error on Logout");
+            }
+        } else {
+            throw new ErrorMessage(401, "Error: unauthorized");
+        }
+    }
+
+    public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
+        if(token != null && !token.isEmpty()){
+            try {
+                AuthData auth = authDAO.findAuth(token);
+                GameData game = gameDAO.findGame(gameID);
+                if(auth == null){
+                    throw new ErrorMessage(401, "Error: unauthorized");
+                }
+                if(game == null){
+                    throw new ErrorMessage(400, "Error: bad request");
+                }
+                GameData updated;
+                if(Objects.equals(playerColor, "BLACK")){
+                    if(game.blackUsername() != null){
+                        throw new ErrorMessage(403, "Error: already taken");
+                    }
+                    updated = new GameData(gameID, game.whiteUsername(), auth.username(), game.gameName(),game.game());
+                } else if (Objects.equals(playerColor, "WHITE")){
+                    if(game.whiteUsername() != null){
+                        throw new ErrorMessage(403, "Error: already taken");
+                    }
+                    updated = new GameData(gameID, auth.username(), game.blackUsername(), game.gameName(),game.game());
+                } else {
+                    throw new ErrorMessage(400, "Error: bad request");
+                }
+                gameDAO.updateGame(updated);
             } catch (DataAccessException e) {
                 throw new ErrorMessage(500, "Error: Data Access Error on Logout");
             }
