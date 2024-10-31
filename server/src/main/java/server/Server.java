@@ -18,6 +18,15 @@ public class Server {
         UserDAO userDAO = new MemUserDAO();
         GameDAO gameDAO = new MemGameDAO();
         AuthDAO authDAO = new MemAuthDAO();
+        try {
+            if (true) {
+                userDAO = new SQLUserDAO();
+                gameDAO = new SQLGameDAO();
+                authDAO = new SQLAuthDAO();
+            }
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         service = new Service(userDAO,authDAO,gameDAO);
         Spark.port(desiredPort);
 
