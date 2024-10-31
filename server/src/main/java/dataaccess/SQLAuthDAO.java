@@ -1,8 +1,12 @@
 package dataaccess;
 
 import model.AuthData;
+import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLAuthDAO implements AuthDAO {
 
@@ -36,9 +40,31 @@ public class SQLAuthDAO implements AuthDAO {
 
     }
 
+    private void executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                }
+                ps.executeUpdate();
+                var rs = ps.getGeneratedKeys();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    private AuthData readAuth(ResultSet rs) throws SQLException {
+        var authtoken = rs.getString("authtoken");
+        var username = rs.getString("username");
+        return new AuthData(authtoken, username);
+    }
+
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
-
+        var statement = "INSERT INTO authtokens (authtoken, username) VALUES (?, ?)";
+        executeUpdate(statement, auth.authToken(), auth.username());
     }
 
     @Override
@@ -53,6 +79,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     @Override
     public void clearTable() throws DataAccessException {
-
+        var statement = "TRUNCATE authtokens";
+        executeUpdate(statement);
     }
 }

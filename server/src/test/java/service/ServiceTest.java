@@ -12,10 +12,11 @@ public class ServiceTest {
     private static Service s;
     GameDAO gameDAO;
     @BeforeEach
-    public void setUp(){
-        UserDAO userDAO = new MemUserDAO();
-        gameDAO = new MemGameDAO();
-        AuthDAO authDAO = new MemAuthDAO();
+    public void setUp() throws DataAccessException {
+        UserDAO userDAO = new SQLUserDAO();
+        userDAO.clearTable();
+        gameDAO = new SQLGameDAO();
+        AuthDAO authDAO = new SQLAuthDAO();
         s = new Service(userDAO,authDAO,gameDAO);
     }
     @Test
