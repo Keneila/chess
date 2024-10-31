@@ -1,10 +1,16 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
 
 public class SQLGameDAO implements GameDAO {
 
@@ -40,9 +46,41 @@ public class SQLGameDAO implements GameDAO {
 
     }
 
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                for (var i = 0; i < params.length; i++) {
+                    var param = params[i];
+                    if (param instanceof String p) ps.setString(i + 1, p);
+                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
+                    else if (param == null) ps.setNull(i + 1, NULL);
+                }
+                ps.executeUpdate();
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    private GameData readGame(ResultSet rs) throws SQLException {
+        var id = rs.getInt("id");
+        var whiteUsername = rs.getString("whiteusername");
+        var blackUsername = rs.getString("blackusername");
+        var gameName = rs.getString("gamename");
+        var json = rs.getString("json");
+        var game = new Gson().fromJson(json, ChessGame.class);
+        return new GameData(id,whiteUsername, blackUsername, gameName, game);
+    }
+
     @Override
     public void clearTable() throws DataAccessException {
-
+        var statement = "TRUNCATE games";
+        executeUpdate(statement);
     }
 
     @Override
@@ -52,11 +90,27 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
-        return null;
+        var statement = "INSERT INTO pet (whiteusername, blackusername, gameName, json) VALUES (?, ?, ?, ?)";
+        var json = new Gson().toJson(game.game());
+        var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
+        return new GameData(id, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
     }
 
     @Override
     public GameData findGame(int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, json FROM pet WHERE id=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
