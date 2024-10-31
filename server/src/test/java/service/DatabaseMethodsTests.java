@@ -22,4 +22,15 @@ public class DatabaseMethodsTests {
         user.createUser(new UserData("use2r","pa2ss","ema2il"));
         user.clearTable();
     }
+
+    @Test
+    public void findUser() throws Exception{
+        UserDAO user = new SQLUserDAO();
+        UserData user1 = new UserData("user","pass","email");
+        UserData user2 = new UserData("use2r","pa2ss","ema2il");
+        user.createUser(user1);
+        user.createUser(user2);
+        Assertions.assertEquals(user1, user.findUser("user"));
+        Assertions.assertEquals(user2, user.findUser("use2r"));
+    }
 }
