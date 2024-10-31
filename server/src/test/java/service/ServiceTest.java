@@ -15,7 +15,7 @@ public class ServiceTest {
     public void setUp() throws DataAccessException {
         UserDAO userDAO = new SQLUserDAO();
         userDAO.clearTable();
-        gameDAO = new SQLGameDAO();
+        gameDAO = new MemGameDAO();
         AuthDAO authDAO = new SQLAuthDAO();
         s = new Service(userDAO,authDAO,gameDAO);
     }

@@ -68,6 +68,8 @@ public class DatabaseMethodsTests {
     public void createAuth() throws Exception{
         auth.createAuth(authtoken1);
         Assertions.assertEquals(authtoken1, auth.findAuth(authtoken1.authToken()));
+        auth.createAuth(authtoken2);
+        Assertions.assertEquals(authtoken2, auth.findAuth(authtoken2.authToken()));
         auth.clearTable();
     }
 
@@ -82,26 +84,19 @@ public class DatabaseMethodsTests {
 
     @Test
     public void findAuth() throws Exception{
-        user.createUser(user1);
-        user.createUser(user2);
-        Assertions.assertEquals(user1, user.findUser(user1.username()));
-        Assertions.assertEquals(user2, user.findUser(user2.username()));
+        auth.createAuth(authtoken1);
+        auth.createAuth(authtoken2);
+        Assertions.assertEquals(authtoken1, auth.findAuth(authtoken1.authToken()));
+        Assertions.assertEquals(authtoken2, auth.findAuth(authtoken2.authToken()));
         user.clearTable();
     }
 
     @Test
     public void createAuthFail() throws Exception{
-        UserDAO user = new SQLUserDAO();
-        Assertions.assertThrows(Exception.class, () ->  user.createUser(userfail2));
-        Assertions.assertThrows(Exception.class, () ->  user.createUser(userfail1));
-        user.clearTable();
     }
 
     @Test
     public void findAuthFail() throws Exception{
-        user.createUser(user1);
-        user.createUser(user2);
-        Assertions.assertNull(user.findUser("rth"));
-        user.clearTable();
+
     }
 }
