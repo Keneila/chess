@@ -1,4 +1,5 @@
 package service;
+import chess.ChessGame;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.AfterEach;
@@ -99,4 +100,14 @@ public class DatabaseMethodsTests {
     public void findAuthFail() throws Exception{
 
     }
+
+    @Test
+    public void clearGames() throws Exception{
+        GameDAO gameDAO = new SQLGameDAO();
+        GameData game1 = new GameData(1, "white", null, "name", new ChessGame());
+         GameData g = gameDAO.createGame(game1);
+        gameDAO.findGame(g.gameID());
+        gameDAO.clearTable();
+    }
+
 }

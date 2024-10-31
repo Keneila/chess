@@ -90,7 +90,7 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
-        var statement = "INSERT INTO pet (whiteusername, blackusername, gameName, json) VALUES (?, ?, ?, ?)";
+        var statement = "INSERT INTO games (whiteusername, blackusername, gameName, json) VALUES (?, ?, ?, ?)";
         var json = new Gson().toJson(game.game());
         var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
         return new GameData(id, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
@@ -99,7 +99,7 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData findGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT id, json FROM pet WHERE id=?";
+            var statement = "SELECT id, whiteusername, blackusername, gameName, json FROM games WHERE id=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
