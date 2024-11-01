@@ -5,21 +5,21 @@ import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.util.Collection;
 
 public class DataAccessTest {
-    private UserDAO user = new SQLUserDAO();
+
+    private final UserDAO user = new SQLUserDAO();
     private UserData user1 = new UserData("user","pass","email");
     private UserData user2 = new UserData("use2r","pa2ss","ema2il");
     private UserData userfail1 = new UserData(null,"pa2ss","ema2il");
     private UserData userfail2 = new UserData("D",null,"ema2il");
-    private AuthDAO auth = new SQLAuthDAO();
+    private final AuthDAO auth = new SQLAuthDAO();
     private AuthData authtoken1 = new AuthData("egeebncbxe", "user");
     private AuthData authtoken2 = new AuthData("egergre", "user2");
     private AuthData authtokenfail = new AuthData(null, "user");
     private AuthData authtokenfail2 = new AuthData("egerg9675re", null);
-    private GameDAO gameDAO = new SQLGameDAO();
+    private final GameDAO gameDAO = new SQLGameDAO();
     private GameData game1 = new GameData(1, null, null, "name", new ChessGame());
     private GameData game2 = new GameData(2, null, null, "name2", new ChessGame());
     private GameData gamefail1 = new GameData(1, "white", null, null, new ChessGame());
