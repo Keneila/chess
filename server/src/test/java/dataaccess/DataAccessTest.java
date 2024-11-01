@@ -1,5 +1,6 @@
+package dataaccess;
+
 import chess.ChessGame;
-import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,7 +8,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Collection;
 
-public class DataAccess {
+public class DataAccessTest {
     private UserDAO user = new SQLUserDAO();
     private UserData user1 = new UserData("user","pass","email");
     private UserData user2 = new UserData("use2r","pa2ss","ema2il");
@@ -25,7 +26,7 @@ public class DataAccess {
     private GameData gameup1 = new GameData(1, "white", null, "name", new ChessGame());
     private GameData gameup2 = new GameData(1, "white", "black", "name", new ChessGame());
 
-    public DataAccess() throws DataAccessException {
+    public DataAccessTest() throws DataAccessException {
     }
 
     @Test
