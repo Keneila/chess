@@ -6,6 +6,7 @@ import model.GameData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -85,7 +86,20 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return List.of();
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id, whiteusername, blackusername, gameName, json FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
     @Override
@@ -116,6 +130,8 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        var statement = "UPDATE games SET whiteusername = ?, blackusername = ?, json = ? WHERE id = ?";
+        var json = new Gson().toJson(game.game());
+        executeUpdate(statement, game.whiteUsername(), game.blackUsername(), json, game.gameID());
     }
 }
