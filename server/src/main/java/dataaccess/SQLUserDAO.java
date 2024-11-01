@@ -76,6 +76,9 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
+        if(user.password() == null){
+            throw new DataAccessException("Error: No Password");
+        }
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         executeUpdate(statement, user.username(), hashedPassword, user.email());
