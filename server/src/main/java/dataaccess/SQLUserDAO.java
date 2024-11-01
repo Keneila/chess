@@ -16,10 +16,10 @@ import static java.sql.Types.NULL;
 /**
  * a User Data Access Object - to handle interactions with the database that have to do with Users
  */
-public class SQLUserDAO implements UserDAO{
+public class SQLUserDAO extends SQLDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException {
-        configureDatabase();
+        super.configureDatabase(createStatements);
     }
 
     private final String[] createStatements = {
@@ -34,20 +34,6 @@ public class SQLUserDAO implements UserDAO{
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-
-    private void configureDatabase() throws DataAccessException{
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
 
     @Override
     public UserData findUser(String userName) throws DataAccessException {
@@ -90,19 +76,5 @@ public class SQLUserDAO implements UserDAO{
         executeUpdate(statement);
     }
 
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                }
-                ps.executeUpdate();
-                var rs = ps.getGeneratedKeys();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
-    }
 
 }
