@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import model.*;
 import service.ErrorMessage;
 
 import java.io.IOException;
@@ -10,12 +11,40 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 
 public class ServerFacade {
     private final String serverUrl;
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public void deleteDB() throws ErrorMessage {
+
+    }
+
+    public AuthData register(UserData user) throws ErrorMessage {
+        return null;
+    }
+
+    public AuthData login(LoginRequest user) throws ErrorMessage {
+        return null;
+    }
+
+    public void logout(String token) throws ErrorMessage {
+
+    }
+
+    public int createGame(CreateGameRequest req) throws ErrorMessage {
+        return 0;
+    }
+    public Collection<GameData> listGames(String token) throws ErrorMessage {
+        return null;
+    }
+
+    public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
+
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ErrorMessage {
