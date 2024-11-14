@@ -15,7 +15,13 @@ public class InGameClient implements Client {
 
     @Override
     public String eval(String line) {
-        return "";
+        String result = "";
+        if (line.equals("help")){
+            //return help();
+        } else if (line.equals("quit")){
+            return line;
+        }
+        return result;
     }
 
     @Override

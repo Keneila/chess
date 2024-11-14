@@ -26,6 +26,8 @@ public class StartingClient implements Client{
         String result = "";
         if (line.equals("help")){
             return help();
+        } else if (line.equals("quit")){
+            return line;
         }
         return result;
     }
