@@ -37,16 +37,17 @@ public class ServerFacade {
 
     public void logout(String token) throws ErrorMessage {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, token, null);
     }
 
     public int createGame(CreateGameRequest req) throws ErrorMessage {
         var path = "/game";
-        return this.makeRequest("POST", path, null, null);
+        return this.makeRequest("POST", path, req, null);
     }
     public Collection<GameData> listGames(String token) throws ErrorMessage {
         var path = "/game";
-        return this.makeRequest("GET", path, null, null);
+        record listGames(Collection<GameData> g){};
+        return this.makeRequest("GET", path, null, listGames.class).g();
     }
 
     public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
@@ -85,7 +86,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ErrorMessage {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ErrorMessage(status, "failure: " + status);
+            throw new ErrorMessage(status, "http failure: " + status);
         }
     }
 

@@ -1,6 +1,7 @@
 package ui;
 
 import model.AuthData;
+import model.CreateGameRequest;
 import server.ServerFacade;
 import service.ErrorMessage;
 
@@ -52,19 +53,23 @@ public class LoggedInClient implements Client{
                 """;
     }
     private String create(String... params) throws ErrorMessage{
-        return "";
+        server.createGame(new CreateGameRequest(params[0],auth.authToken()));
+        return "Game Created.";
     }
     private String list() throws ErrorMessage{
-        return "";
+        return server.listGames(auth.authToken()).toString();
+
     }
     private String observe(String... params) throws ErrorMessage{
-        return "";
+        server.joinGame(auth.authToken(), null,Integer.parseInt(params[0]));
+        return "Joined Game as Observer";
     }
     private String logout() throws ErrorMessage{
-        return "";
+        server.logout(auth.authToken());
+        return "Logged out.";
     }
     private String quit() throws ErrorMessage{
-        server.logout(auth.authToken());
+        //server.logout(auth.authToken());
         return "quit";
     }
     @Override

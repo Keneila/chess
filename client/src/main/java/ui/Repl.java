@@ -14,9 +14,9 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ServerFacade server = new ServerFacade(serverUrl);
-        sClient = new StartingClient(server,serverUrl,state);
         lClient = new LoggedInClient(server,serverUrl, state);
         gClient = new InGameClient(server,serverUrl,state);
+        sClient = new StartingClient(server,serverUrl,state,lClient,gClient);
     }
 
     public void run() {
@@ -32,7 +32,11 @@ public class Repl {
                 switch (state){
                     case LOGGED_IN -> client = lClient;
                     case PLAYING, WATCHING -> client = gClient;
-                    case null, default -> client = sClient;
+                    case null, default -> {
+                        client = sClient;
+                        lClient.setAuth(null);
+                        gClient.setAuth(null);
+                    }
                 }
                 client.updateState(state);
                 result = client.eval(line);
