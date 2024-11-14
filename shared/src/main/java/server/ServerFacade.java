@@ -21,30 +21,38 @@ public class ServerFacade {
     }
 
     public void deleteDB() throws ErrorMessage {
-
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
     }
 
     public AuthData register(UserData user) throws ErrorMessage {
-        return null;
+        var path = "/user";
+        return this.makeRequest("POST", path, null, null);
     }
 
     public AuthData login(LoginRequest user) throws ErrorMessage {
-        return null;
+        var path = "/session";
+        return this.makeRequest("POST", path, null, null);
     }
 
     public void logout(String token) throws ErrorMessage {
-
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, null);
     }
 
     public int createGame(CreateGameRequest req) throws ErrorMessage {
-        return 0;
+        var path = "/game";
+        return this.makeRequest("POST", path, null, null);
     }
     public Collection<GameData> listGames(String token) throws ErrorMessage {
-        return null;
+        var path = "/game";
+        return this.makeRequest("GET", path, null, null);
     }
 
     public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
-
+        var path = "/game";
+        record joinRequest(String token, String playerColor, int gameID){}
+        this.makeRequest("PUT", path, new joinRequest(token,playerColor,gameID), null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ErrorMessage {
