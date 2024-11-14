@@ -1,6 +1,9 @@
 package ui;
 
 import server.ServerFacade;
+import service.ErrorMessage;
+
+import java.util.Arrays;
 
 public class StartingClient implements Client{
     private final ServerFacade server;
@@ -22,14 +25,27 @@ public class StartingClient implements Client{
                 """;
     }
 
+    private String register(String... params) throws ErrorMessage{
+        return "";
+    }
+    private String login(String... params) throws ErrorMessage{
+        return "";
+    }
+
     public String eval(String line) {
-        String result = "";
-        if (line.equals("help")){
-            return help();
-        } else if (line.equals("quit")){
-            return line;
+        try {
+            var tokens = line.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "register" -> register(params);
+                case "login" -> login(params);
+                case "quit" -> "quit";
+                default -> help();
+            };
+        } catch (ErrorMessage ex) {
+            return ex.getMessage();
         }
-        return result;
     }
 
     @Override

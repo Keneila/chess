@@ -1,6 +1,9 @@
 package ui;
 
 import server.ServerFacade;
+import service.ErrorMessage;
+
+import java.util.Arrays;
 
 public class LoggedInClient implements Client{
     private final ServerFacade server;
@@ -14,13 +17,26 @@ public class LoggedInClient implements Client{
     }
 
     public String eval(String line) {
-        String result = "";
-        if (line.equals("help")){
-            return help();
-        } else if (line.equals("quit")){
-            return line;
+        try {
+            var tokens = line.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "create" -> create(params);
+                case "logout" -> logout();
+                case "list" -> list();
+                case "observe" -> observe(params);
+                case "join" -> join(params);
+                case "quit" -> "quit";
+                default -> help();
+            };
+        } catch (ErrorMessage ex) {
+            return ex.getMessage();
         }
-        return result;
+    }
+
+    private String join(String[] params) throws ErrorMessage{
+        return "";
     }
 
     public String help() {
@@ -33,6 +49,18 @@ public class LoggedInClient implements Client{
                 quit - playing chess
                 help - with possible commands
                 """;
+    }
+    private String create(String... params) throws ErrorMessage{
+        return "";
+    }
+    private String list() throws ErrorMessage{
+        return "";
+    }
+    private String observe(String... params) throws ErrorMessage{
+        return "";
+    }
+    private String logout() throws ErrorMessage{
+        return "";
     }
 
     @Override
