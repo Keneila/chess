@@ -3,7 +3,7 @@ package ui;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
-import server.ServerFacade;
+import ui.server.ServerFacade;
 import service.ErrorMessage;
 
 import java.util.Arrays;
@@ -63,6 +63,7 @@ public class StartingClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "delete" -> delete();
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "quit" -> quit();
@@ -71,6 +72,11 @@ public class StartingClient implements Client{
         } catch (ErrorMessage ex) {
             return ex.getMessage();
         }
+    }
+
+    private String delete() throws ErrorMessage{
+        server.deleteDB();
+        return "Deleted";
     }
 
     @Override

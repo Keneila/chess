@@ -1,4 +1,4 @@
-package server;
+package ui.server;
 
 import com.google.gson.Gson;
 import model.*;
@@ -15,55 +15,57 @@ import java.util.Collection;
 
 public class ServerFacade {
     private final String serverUrl;
-
     public ServerFacade(String url) {
         serverUrl = url;
     }
 
     public void deleteDB() throws ErrorMessage {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     public AuthData register(UserData user) throws ErrorMessage {
         var path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, null, AuthData.class);
     }
 
     public AuthData login(LoginRequest user) throws ErrorMessage {
         var path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, null, AuthData.class);
     }
 
     public void logout(String token) throws ErrorMessage {
         var path = "/session";
-        this.makeRequest("DELETE", path, token, null);
+        this.makeRequest("DELETE", path, null, token, null);
     }
 
-    public int createGame(CreateGameRequest req) throws ErrorMessage {
+    public int createGame(String gameName, String token) throws ErrorMessage {
         var path = "/game";
-        return this.makeRequest("POST", path, req, null);
+        record gameN (String gameName){};
+        return this.makeRequest("POST", path, new gameN(gameName), token, Integer.class);
     }
     public Collection<GameData> listGames(String token) throws ErrorMessage {
         var path = "/game";
         record listGames(Collection<GameData> g){};
-        return this.makeRequest("GET", path, null, listGames.class).g();
+        return this.makeRequest("GET", path, null, token, listGames.class).g();
     }
 
     public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
         var path = "/game";
-        record joinRequest(String token, String playerColor, int gameID){}
-        this.makeRequest("PUT", path, new joinRequest(token,playerColor,gameID), null);
+        record joinRequest(String playerColor, int gameID){}
+        this.makeRequest("PUT", path, new joinRequest(playerColor,gameID), token, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ErrorMessage {
+    private <T> T makeRequest(String method, String path, Object requestBody, String token, Class<T> responseClass) throws ErrorMessage {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
-            writeBody(request, http);
+            writeBody(requestBody, http);
+            if (token != null && !token.isEmpty()){
+                    http.addRequestProperty("authorization", token);
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

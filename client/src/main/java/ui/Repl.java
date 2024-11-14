@@ -2,7 +2,7 @@ package ui;
 
 import java.util.Scanner;
 
-import server.ServerFacade;
+import ui.server.ServerFacade;
 import static ui.EscapeSequences.*;
 
 

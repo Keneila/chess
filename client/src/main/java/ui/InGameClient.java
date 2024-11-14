@@ -1,7 +1,7 @@
 package ui;
 
 import model.AuthData;
-import server.ServerFacade;
+import ui.server.ServerFacade;
 
 public class InGameClient implements Client {
     private final ServerFacade server;

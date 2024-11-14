@@ -2,7 +2,7 @@ package ui;
 
 import model.AuthData;
 import model.CreateGameRequest;
-import server.ServerFacade;
+import ui.server.ServerFacade;
 import service.ErrorMessage;
 
 import java.util.Arrays;
@@ -24,6 +24,7 @@ public class LoggedInClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "delete" -> delete();
                 case "create" -> create(params);
                 case "logout" -> logout();
                 case "list" -> list();
@@ -53,8 +54,12 @@ public class LoggedInClient implements Client{
                 """;
     }
     private String create(String... params) throws ErrorMessage{
-        server.createGame(new CreateGameRequest(params[0],auth.authToken()));
-        return "Game Created.";
+        if (params.length > 0) {
+            server.createGame(params[0], auth.authToken());
+            return "Game Created.";
+        } else {
+            return "Please include <Name> when creating a game.";
+        }
     }
     private String list() throws ErrorMessage{
         return server.listGames(auth.authToken()).toString();
@@ -66,11 +71,18 @@ public class LoggedInClient implements Client{
     }
     private String logout() throws ErrorMessage{
         server.logout(auth.authToken());
+        state = State.LOGGED_OUT;
         return "Logged out.";
     }
     private String quit() throws ErrorMessage{
-        //server.logout(auth.authToken());
+        server.logout(auth.authToken());
+        state = State.LOGGED_OUT;
         return "quit";
+    }
+
+    private String delete() throws ErrorMessage{
+        server.deleteDB();
+        return "Deleted DataBase";
     }
     @Override
     public void updateState(State state) {
