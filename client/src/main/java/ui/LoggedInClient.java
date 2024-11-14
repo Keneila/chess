@@ -14,7 +14,23 @@ public class LoggedInClient implements Client{
     }
 
     public String eval(String line) {
-        return "";
+        String result = "";
+        if (line.equals("help")){
+            return help();
+        }
+        return result;
+    }
+
+    public String help() {
+        return """
+                create <NAME> - a game
+                list - games
+                join <ID> [WHITE|BLACK] - a game
+                observe <ID> - a game
+                logout - when you are done
+                quit - playing chess
+                help - with possible commands
+                """;
     }
 
     @Override

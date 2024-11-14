@@ -23,7 +23,11 @@ public class StartingClient implements Client{
     }
 
     public String eval(String line) {
-        return "";
+        String result = "";
+        if (line.equals("help")){
+            return help();
+        }
+        return result;
     }
 
     @Override

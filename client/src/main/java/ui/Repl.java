@@ -21,7 +21,6 @@ public class Repl {
 
     public void run() {
         System.out.println("\uD83D\uDC36 Welcome to 240 chess. Type help to get started.");
-        System.out.print(sClient.help());
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
@@ -38,7 +37,7 @@ public class Repl {
                 client.updateState(state);
                 result = client.eval(line);
                 state = client.getState();
-                System.out.print(SET_TEXT_COLOR_BLACK + result);
+                System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -48,7 +47,7 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + "[" + state + "] >>> " + SET_TEXT_COLOR_BLACK);
+        System.out.print("\n" + RESET_TEXT_COLOR + "[" + state + "] >>> ");
     }
 
 }
