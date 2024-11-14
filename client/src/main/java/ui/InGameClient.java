@@ -1,11 +1,13 @@
 package ui;
 
+import model.AuthData;
 import server.ServerFacade;
 
 public class InGameClient implements Client {
     private final ServerFacade server;
     private final String serverUrl;
     private State state;
+    private AuthData auth = null;
 
     public InGameClient(ServerFacade server, String serverUrl, State state) {
         this.server = server;
@@ -32,5 +34,9 @@ public class InGameClient implements Client {
     @Override
     public State getState() {
         return state;
+    }
+
+    public void setAuth(AuthData auth) {
+        this.auth = auth;
     }
 }

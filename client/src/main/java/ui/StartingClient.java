@@ -12,11 +12,15 @@ public class StartingClient implements Client{
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.LOGGED_OUT;
-
-    public StartingClient(ServerFacade server, String serverUrl, State state) {
+    private AuthData auth = null;
+    LoggedInClient lClient;
+    InGameClient gClient;
+    public StartingClient(ServerFacade server, String serverUrl, State state, LoggedInClient lClient, InGameClient gClient) {
         this.server = server;
         this.serverUrl = serverUrl;
         this.state = state;
+        this.lClient = lClient;
+        this.gClient = gClient;
     }
 
     public String help() {
@@ -30,7 +34,9 @@ public class StartingClient implements Client{
 
     private String register(String... params) throws ErrorMessage{
         if (params.length >= 3) {
-            AuthData auth = server.register(new UserData(params[0], params[1],params[2]));
+            auth = server.register(new UserData(params[0], params[1],params[2]));
+            lClient.setAuth(auth);
+            gClient.setAuth(auth);
             state = State.LOGGED_IN;
             return "Register successful";
         }
@@ -38,11 +44,17 @@ public class StartingClient implements Client{
     }
     private String login(String... params) throws ErrorMessage{
         if (params.length >= 2) {
-            AuthData auth = server.login(new LoginRequest(params[0], params[1]));
+            auth = server.login(new LoginRequest(params[0], params[1]));
+            lClient.setAuth(auth);
+            gClient.setAuth(auth);
             state = State.LOGGED_IN;
             return "Login successful.";
         }
         throw new ErrorMessage(400, "Expected: <USERNAME> <PASSWORD>");
+    }
+
+    private String quit() throws ErrorMessage{
+        return "quit";
     }
 
     public String eval(String line) {
@@ -53,7 +65,7 @@ public class StartingClient implements Client{
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "quit";
+                case "quit" -> quit();
                 default -> help();
             };
         } catch (ErrorMessage ex) {

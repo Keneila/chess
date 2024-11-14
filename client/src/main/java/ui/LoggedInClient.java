@@ -1,5 +1,6 @@
 package ui;
 
+import model.AuthData;
 import server.ServerFacade;
 import service.ErrorMessage;
 
@@ -9,7 +10,7 @@ public class LoggedInClient implements Client{
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.LOGGED_OUT;
-
+    private AuthData auth = null;
     public LoggedInClient(ServerFacade server, String serverUrl, State state) {
         this.server = server;
         this.serverUrl = serverUrl;
@@ -27,7 +28,7 @@ public class LoggedInClient implements Client{
                 case "list" -> list();
                 case "observe" -> observe(params);
                 case "join" -> join(params);
-                case "quit" -> "quit";
+                case "quit" -> quit();
                 default -> help();
             };
         } catch (ErrorMessage ex) {
@@ -62,7 +63,10 @@ public class LoggedInClient implements Client{
     private String logout() throws ErrorMessage{
         return "";
     }
-
+    private String quit() throws ErrorMessage{
+        server.logout(auth.authToken());
+        return "quit";
+    }
     @Override
     public void updateState(State state) {
         this.state = state;
@@ -71,6 +75,10 @@ public class LoggedInClient implements Client{
     @Override
     public State getState() {
         return state;
+    }
+
+    public void setAuth(AuthData auth) {
+        this.auth = auth;
     }
 }
 

@@ -27,12 +27,12 @@ public class ServerFacade {
 
     public AuthData register(UserData user) throws ErrorMessage {
         var path = "/user";
-        return this.makeRequest("POST", path, null, null);
+        return this.makeRequest("POST", path, user, AuthData.class);
     }
 
     public AuthData login(LoginRequest user) throws ErrorMessage {
         var path = "/session";
-        return this.makeRequest("POST", path, null, null);
+        return this.makeRequest("POST", path, user, AuthData.class);
     }
 
     public void logout(String token) throws ErrorMessage {
