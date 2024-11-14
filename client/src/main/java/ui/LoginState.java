@@ -1,6 +1,6 @@
 package ui;
 
 public enum LoginState {
-    LOGGEDIN,
-    LOGGEDOUT
+    LOGGED_IN,
+    LOGGED_OUT
 }
