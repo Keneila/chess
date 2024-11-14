@@ -14,8 +14,8 @@ public class Repl {
 
     public Repl(String serverUrl) {
         ServerFacade server = new ServerFacade(serverUrl);
-        lClient = new LoggedInClient(server,serverUrl, state);
         gClient = new InGameClient(server,serverUrl,state);
+        lClient = new LoggedInClient(server,serverUrl, state, gClient);
         sClient = new StartingClient(server,serverUrl,state,lClient,gClient);
     }
 

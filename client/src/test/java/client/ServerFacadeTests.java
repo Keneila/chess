@@ -2,17 +2,21 @@ package client;
 
 import org.junit.jupiter.api.*;
 import server.Server;
+import service.ErrorMessage;
+import ui.server.ServerFacade;
 
 
 public class ServerFacadeTests {
 
     private static Server server;
+    static ServerFacade facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
-        var port = server.run(0);
+        var port = server.run(8060);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade("http://localhost:8060");
     }
 
     @AfterAll
@@ -25,5 +29,10 @@ public class ServerFacadeTests {
     public void sampleTest() {
         Assertions.assertTrue(true);
     }
+    @Test
+    public void observeTest() throws ErrorMessage {
+        Assertions.assertDoesNotThrow(()-> facade.joinGame("egeebncbxe", "white", 2));
+    }
+
 
 }

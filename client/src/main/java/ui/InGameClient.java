@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import model.AuthData;
 import ui.server.ServerFacade;
 
@@ -24,6 +25,10 @@ public class InGameClient implements Client {
             return line;
         }
         return result;
+    }
+
+    public String printBoard(ChessBoard board, String color){
+        return board.toString();
     }
 
     @Override

@@ -1,7 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
 import model.AuthData;
 import model.CreateGameRequest;
+import model.GameData;
 import ui.server.ServerFacade;
 import service.ErrorMessage;
 
@@ -10,12 +12,14 @@ import java.util.Arrays;
 public class LoggedInClient implements Client{
     private final ServerFacade server;
     private final String serverUrl;
+    private final InGameClient gameClient;
     private State state = State.LOGGED_OUT;
     private AuthData auth = null;
-    public LoggedInClient(ServerFacade server, String serverUrl, State state) {
+    public LoggedInClient(ServerFacade server, String serverUrl, State state, InGameClient gameClient) {
         this.server = server;
         this.serverUrl = serverUrl;
         this.state = state;
+        this.gameClient = gameClient;
     }
 
     public String eval(String line) {
@@ -39,7 +43,12 @@ public class LoggedInClient implements Client{
     }
 
     private String join(String[] params) throws ErrorMessage{
-        return "";
+        int gameID = Integer.parseInt(params[0]);
+        String plaverColor = params[1];
+        System.out.println("Color:" + plaverColor);
+        System.out.println("ID:" + gameID);
+        server.joinGame(auth.authToken(), plaverColor, gameID);
+        return "Joined Game as the " + plaverColor + " Player.";
     }
 
     public String help() {
@@ -66,8 +75,12 @@ public class LoggedInClient implements Client{
 
     }
     private String observe(String... params) throws ErrorMessage{
-        server.joinGame(auth.authToken(), null,Integer.parseInt(params[0]));
-        return "Joined Game as Observer";
+        for (GameData game : server.listGames(auth.authToken())){
+            if (game.gameID() == Integer.parseInt(params[0])){
+                return gameClient.printBoard(game.game().getBoard(), "white");
+            }
+        }
+        return "Not a Valid Game ID.";
     }
     private String logout() throws ErrorMessage{
         server.logout(auth.authToken());
@@ -82,7 +95,7 @@ public class LoggedInClient implements Client{
 
     private String delete() throws ErrorMessage{
         server.deleteDB();
-        return "Deleted DataBase";
+        return "Deleted Database";
     }
     @Override
     public void updateState(State state) {
