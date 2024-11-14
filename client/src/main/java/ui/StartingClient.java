@@ -1,5 +1,8 @@
 package ui;
 
+import model.AuthData;
+import model.LoginRequest;
+import model.UserData;
 import server.ServerFacade;
 import service.ErrorMessage;
 
@@ -26,10 +29,20 @@ public class StartingClient implements Client{
     }
 
     private String register(String... params) throws ErrorMessage{
-        return "";
+        if (params.length >= 3) {
+            AuthData auth = server.register(new UserData(params[0], params[1],params[2]));
+            state = State.LOGGED_IN;
+            return "Register successful";
+        }
+        throw new ErrorMessage(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
     private String login(String... params) throws ErrorMessage{
-        return "";
+        if (params.length >= 2) {
+            AuthData auth = server.login(new LoginRequest(params[0], params[1]));
+            state = State.LOGGED_IN;
+            return "Login successful.";
+        }
+        throw new ErrorMessage(400, "Expected: <USERNAME> <PASSWORD>");
     }
 
     public String eval(String line) {
