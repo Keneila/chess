@@ -66,9 +66,7 @@ public class Server {
         var token = req.headers("authorization");
         try{
             Collection<GameData> data = service.listGames(token);
-            var list = new HashMap<String, Collection<GameData>>();
-            list.put("games",data);
-            return new Gson().toJson(list);
+            return new Gson().toJson(new ListGamesResponse(data));
         } catch (ErrorMessage e){
             res.status(e.getCode());
             Message err = new Message(e.getMessage());

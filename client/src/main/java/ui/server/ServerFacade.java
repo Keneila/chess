@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -47,14 +48,12 @@ public class ServerFacade {
     }
     public Collection<GameData> listGames(String token) throws ErrorMessage {
         var path = "/game";
-        record listGames(Collection<GameData> g){};
-        return this.makeRequest("GET", path, null, token, listGames.class).g();
+        return this.makeRequest("GET", path, null, token, ListGamesResponse.class).games();
     }
 
     public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
         var path = "/game";
-        record joinRequest(String playerColor, int gameID){}
-        this.makeRequest("PUT", path, new joinRequest(playerColor,gameID), token, null);
+        this.makeRequest("PUT", path, new JoinGameRequest(playerColor,gameID), token, null);
     }
 
     private <T> T makeRequest(String method, String path, Object requestBody, String token, Class<T> responseClass) throws ErrorMessage {
@@ -105,7 +104,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
