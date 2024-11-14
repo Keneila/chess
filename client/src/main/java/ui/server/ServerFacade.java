@@ -42,7 +42,8 @@ public class ServerFacade {
     public int createGame(String gameName, String token) throws ErrorMessage {
         var path = "/game";
         record gameN (String gameName){};
-        return this.makeRequest("POST", path, new gameN(gameName), token, Integer.class);
+        record gameIdClass (int gameID){};
+        return this.makeRequest("POST", path, new gameN(gameName), token, gameIdClass.class ).gameID();
     }
     public Collection<GameData> listGames(String token) throws ErrorMessage {
         var path = "/game";
@@ -62,10 +63,10 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-            writeBody(requestBody, http);
             if (token != null && !token.isEmpty()){
-                    http.addRequestProperty("authorization", token);
+                http.setRequestProperty("authorization", token);
             }
+            writeBody(requestBody, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
