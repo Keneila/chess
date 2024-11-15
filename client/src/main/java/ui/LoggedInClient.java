@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import model.AuthData;
 import model.CreateGameRequest;
 import model.GameData;
@@ -44,9 +45,9 @@ public class LoggedInClient implements Client{
 
     private String join(String[] params) throws ErrorMessage{
         int gameID = Integer.parseInt(params[0]);
-        String plaverColor = params[1];
-        server.joinGame(auth.authToken(), plaverColor, gameID);
-        return "Joined Game as the " + "" + " Player.";
+        String playerColor = params[1];
+        server.joinGame(auth.authToken(), playerColor, gameID);
+        return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
     }
 
     public String help() {
