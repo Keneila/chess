@@ -44,10 +44,19 @@ public class LoggedInClient implements Client{
     }
 
     private String join(String[] params) throws ErrorMessage{
-        int gameID = Integer.parseInt(params[0]);
-        String playerColor = params[1];
-        server.joinGame(auth.authToken(), playerColor, gameID);
-        return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
+        if (params.length == 2){
+            try {
+                int gameID = Integer.parseInt(params[0]);
+                String playerColor = params[1];
+                server.joinGame(auth.authToken(), playerColor, gameID);
+                state = State.PLAYING;
+                return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
+            } catch (Exception e) {
+                return "Not an Valid Spot in A Game Right Now. Please pick something else.";
+            }
+        } else {
+            return "Expected: join <ID> [WHITE|BLACK]";
+        }
     }
 
     public String help() {
@@ -70,7 +79,16 @@ public class LoggedInClient implements Client{
         }
     }
     private String list() throws ErrorMessage{
-        return server.listGames(auth.authToken()).toString();
+        try {
+            StringBuilder s = new StringBuilder();
+            for (GameData game : server.listGames(auth.authToken())){
+                s.append(game.gameID() + ") " + game.gameName() + " \nPlayers-> white: " +
+                        game.whiteUsername() + "  black: " + game.blackUsername() + "\n");
+            }
+            return s.toString();
+        } catch (ErrorMessage e) {
+            return "Invalid Authtoken. Please restart Server and Login Again.";
+        }
     }
 
     private String observe(String... params) throws ErrorMessage{
@@ -78,6 +96,7 @@ public class LoggedInClient implements Client{
             try {
                 for (GameData game : server.listGames(auth.authToken())) {
                     if (game.gameID() == Integer.parseInt(params[0])) {
+                        state = State.WATCHING;
                         return gameClient.printBoard(game.game().getBoard(), "white");
                     }
                 }
@@ -85,12 +104,16 @@ public class LoggedInClient implements Client{
                 return "Please input a valid Game ID when attempting to observe.";
             }
         }
-        return "Not a Valid Game ID.";
+        return "Needs a Valid Game ID.";
     }
     private String logout() throws ErrorMessage{
+        try{
         server.logout(auth.authToken());
         state = State.LOGGED_OUT;
         return "Logged out.";
+        } catch (Exception e){
+            return "Something went wrong. Please restart.";
+        }
     }
     private String quit() throws ErrorMessage{
         server.logout(auth.authToken());

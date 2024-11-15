@@ -81,7 +81,7 @@ public class StartingClient implements Client{
 
     private String delete() throws ErrorMessage{
         server.deleteDB();
-        return "Deleted";
+        return "Delete";
     }
 
     @Override
