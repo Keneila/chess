@@ -96,7 +96,8 @@ public class LoggedInClient implements Client{
                 for (GameData game : server.listGames(auth.authToken())) {
                     if (game.gameID() == Integer.parseInt(params[0])) {
                         state = State.WATCHING;
-                        return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
+                        return gameClient.printBoard(new ChessGame().getBoard(), "white")
+                                + gameClient.printBoard(new ChessGame().getBoard(), "black");
                     }
                 }
             } catch (Exception e){

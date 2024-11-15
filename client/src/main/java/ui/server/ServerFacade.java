@@ -39,9 +39,9 @@ public class ServerFacade {
 
     public int createGame(String gameName, String token) throws Exception {
         var path = "/game";
-        record gameN (String gameName){};
-        record gameIdClass (int gameID){};
-        return this.makeRequest("POST", path, new gameN(gameName), token, gameIdClass.class ).gameID();
+        record GameN(String gameName){};
+        record GameIdClass(int gameID){};
+        return this.makeRequest("POST", path, new GameN(gameName), token, GameIdClass.class ).gameID();
     }
     public Collection<GameData> listGames(String token) throws Exception {
         var path = "/game";

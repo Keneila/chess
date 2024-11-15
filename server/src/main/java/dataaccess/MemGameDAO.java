@@ -29,12 +29,6 @@ public class MemGameDAO implements GameDAO {
     public GameData findGame(int gameID) throws DataAccessException {
         return games.get(gameID);
     }
-    /**
-     * @Override
-    public void deleteGame(int gameID) throws DataAccessException {
-        games.remove(gameID);
-    }
-     **/
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {

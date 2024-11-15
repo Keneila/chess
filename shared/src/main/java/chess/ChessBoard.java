@@ -2,7 +2,6 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Objects;
-import static chess.EscapeSequences.*;
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -13,6 +12,20 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
     private ChessTeam white;
     private ChessTeam black;
+    public static final String BLACK_KING = " ♚ ";
+    public static final String BLACK_QUEEN = " ♛ ";
+    public static final String BLACK_BISHOP = " ♝ ";
+    public static final String BLACK_KNIGHT = " ♞ ";
+    public static final String BLACK_ROOK = " ♜ ";
+    public static final String BLACK_PAWN = " ♟ ";
+    public static final String EMPTY = " \u2003 ";
+    private static final String UNICODE_ESCAPE = "\u001b";
+    private static final String SET_TEXT_COLOR = UNICODE_ESCAPE + "[38;5;";
+    private static final String SET_BG_COLOR = UNICODE_ESCAPE + "[48;5;";
+    public static final String SET_TEXT_COLOR_BLACK = SET_TEXT_COLOR + "0m";
+    public static final String SET_TEXT_COLOR_BLUE = SET_TEXT_COLOR + "12m";
+    public static final String SET_BG_COLOR_RED = SET_BG_COLOR + "160m";
+    public static final String SET_BG_COLOR_WHITE = SET_BG_COLOR + "15m";
     public ChessBoard() {
         white = new ChessTeam();
         black = new ChessTeam();
