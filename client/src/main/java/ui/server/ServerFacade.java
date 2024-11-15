@@ -2,8 +2,6 @@ package ui.server;
 
 import com.google.gson.Gson;
 import model.*;
-import service.ErrorMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashMap;
 
 public class ServerFacade {
     private final String serverUrl;
