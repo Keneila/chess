@@ -80,9 +80,14 @@ public class InGameClient implements Client {
     public String toStringBoard(boolean direction, ChessPiece[][] squares) {
         StringBuilder s = new StringBuilder();
         int checker = 0;
-        var list = Arrays.asList(squares);
+        var list = squares;
         if(direction){
-            list = list.reversed();
+            list = Arrays.asList(list).reversed().toArray(new ChessPiece[8][8]);
+            for (int i=0; i < list.length; i++) {
+                var row = list[i];
+                Arrays.asList(row).reversed();
+                list[i] = Arrays.asList(row).reversed().toArray(new ChessPiece[8]);
+            }
         }
         for (ChessPiece[] r : list){
             s.append("\n");
