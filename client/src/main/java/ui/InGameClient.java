@@ -36,19 +36,20 @@ public class InGameClient implements Client {
 
     public String printBoard(ChessBoard board, String color){
         StringBuilder s = new StringBuilder();
-        String whiteBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
-        s.append(whiteBoard);
+        String borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
         String b = board.toString();
         String[] rows = b.split("\n");
-        int num = 0;
-        int up = 1;
-        if(color.equals("black")){
-            num = 8;
-            up = -1;
+        int num = 9;
+        int up = -1;
+        if(color.equals("white")){
+            num = 1;
+            up = 1;
             Collections.reverse(Arrays.asList(rows));
+            //borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    h   g   f  e   d  c   b   a    "+ SET_BG_COLOR_DARK_GREY + "\n";
         }
+        s.append(borderBoard);
         for (String row : rows){
-            if (num != 0 ) {
+            if (!(num == 9)) {
                 s.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
                 s.append(" " + num + " ");
                 s.append(row);
@@ -58,7 +59,7 @@ public class InGameClient implements Client {
             }
             num = num + up;
         }
-        s.append(whiteBoard);
+        s.append(borderBoard);
         return s.toString();
     }
 

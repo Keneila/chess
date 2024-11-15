@@ -45,8 +45,16 @@ public class LoggedInClient implements Client{
     private String join(String[] params) throws Exception{
         if (params.length == 2){
             try {
-                int gameID = Integer.parseInt(params[0]);
+                int id = Integer.parseInt(params[0]);
                 String playerColor = params[1];
+                int gameID = 0;
+                int num = 0;
+                for (GameData game : server.listGames(auth.authToken())) {
+                    num++;
+                    if(num == id){
+                        gameID = game.gameID();
+                    }
+                }
                 server.joinGame(auth.authToken(), playerColor, gameID);
                 state = State.PLAYING;
                 return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
@@ -80,9 +88,14 @@ public class LoggedInClient implements Client{
     private String list() throws Exception{
         try {
             StringBuilder s = new StringBuilder();
+            int num = 0;
             for (GameData game : server.listGames(auth.authToken())){
-                s.append(game.gameID() + ") " + game.gameName() + " \nPlayers-> white: " +
+                num++;
+                s.append(num + ") " + game.gameName() + " \nPlayers-> white: " +
                         game.whiteUsername() + "  black: " + game.blackUsername() + "\n");
+            }
+            if (num == 0){
+                return "No Created Games.";
             }
             return s.toString();
         } catch (Exception e) {

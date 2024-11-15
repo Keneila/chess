@@ -33,11 +33,15 @@ public class StartingClient implements Client{
 
     private String register(String... params) throws Exception{
         if (params.length >= 3) {
-            auth = server.register(new UserData(params[0], params[1],params[2]));
-            lClient.setAuth(auth);
-            gClient.setAuth(auth);
-            state = State.LOGGED_IN;
-            return "Register successful";
+            try {
+                auth = server.register(new UserData(params[0], params[1], params[2]));
+                lClient.setAuth(auth);
+                gClient.setAuth(auth);
+                state = State.LOGGED_IN;
+                return "Register successful";
+            } catch (Exception e){
+                return "Invalid Input.";
+            }
         }
         return "Expected: register <USERNAME> <PASSWORD> <EMAIL>";
     }
