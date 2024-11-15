@@ -106,8 +106,10 @@ public class LoggedInClient implements Client{
     private String observe(String... params) throws Exception{
         if (params.length == 1) {
             try {
+                int num = 0;
                 for (GameData game : server.listGames(auth.authToken())) {
-                    if (game.gameID() == Integer.parseInt(params[0])) {
+                    num++;
+                    if (num == Integer.parseInt(params[0])) {
                         state = State.WATCHING;
                         return gameClient.printBoard(new ChessGame().getBoard(), "white")
                                 + gameClient.printBoard(new ChessGame().getBoard(), "black");

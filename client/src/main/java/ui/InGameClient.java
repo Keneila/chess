@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
 import model.AuthData;
 import ui.server.ServerFacade;
 
@@ -25,31 +27,43 @@ public class InGameClient implements Client {
 
     @Override
     public String eval(String line) {
-        String result = "";
-        if (line.equals("help")){
-            //return help();
-        } else if (line.equals("quit")){
-            return line;
+        try {
+            var tokens = line.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "leave" -> leave();
+                case "quit" -> "quit";
+                default -> "type leave to leave the game.";
+            };
+
+        } catch(Exception ex){
+                return ex.getMessage();
+            }
         }
-        return result;
+
+    private String leave() {
+        state = State.LOGGED_IN;
+        return "Left game";
     }
+
 
     public String printBoard(ChessBoard board, String color){
         StringBuilder s = new StringBuilder();
         String borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
-        String b = board.toString();
-        String[] rows = b.split("\n");
+        String b = toStringBoard(true, board.getSquares());
         int num = 9;
         int up = -1;
         if(color.equals("white")){
-            num = 1;
+            b = toStringBoard(false, board.getSquares());
+            num = 0;
             up = 1;
-            Collections.reverse(Arrays.asList(rows));
-            //borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    h   g   f  e   d  c   b   a    "+ SET_BG_COLOR_DARK_GREY + "\n";
+            borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    h   g   f  e   d  c   b   a    "+ SET_BG_COLOR_DARK_GREY + "\n";
         }
+        String[] rows = b.split("\n");
         s.append(borderBoard);
         for (String row : rows){
-            if (!(num == 9)) {
+            if (!(num == 9 || num == 0)) {
                 s.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
                 s.append(" " + num + " ");
                 s.append(row);
@@ -60,6 +74,51 @@ public class InGameClient implements Client {
             num = num + up;
         }
         s.append(borderBoard);
+        return s.toString();
+    }
+
+    public String toStringBoard(boolean direction, ChessPiece[][] squares) {
+        StringBuilder s = new StringBuilder();
+        int checker = 0;
+        var list = Arrays.asList(squares);
+        if(direction){
+            list = list.reversed();
+        }
+        for (ChessPiece[] r : list){
+            s.append("\n");
+            checker = checker-1;
+            for(ChessPiece p : r){
+                if (checker == 0){
+                    s.append(SET_BG_COLOR_RED);
+                    checker = 1;
+                } else {
+                    s.append(SET_BG_COLOR_WHITE);
+                    checker = 0;
+                }
+                String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
+                String piece = EMPTY;
+                if (p != null){
+                    ChessGame.TeamColor color = p.getTeamColor();
+                    switch (color){
+                        case BLACK -> colorSet = SET_TEXT_COLOR_BLACK;
+                        case WHITE -> colorSet = SET_TEXT_COLOR_BLUE;
+                    }
+                    switch (p.getPieceType()){
+                        case ROOK -> piece = BLACK_ROOK;
+                        case KING -> piece = BLACK_KING;
+                        case BISHOP -> piece = BLACK_BISHOP;
+                        case QUEEN -> piece = BLACK_QUEEN;
+                        case PAWN -> piece = BLACK_PAWN;
+                        case KNIGHT -> piece = BLACK_KNIGHT;
+                        case null, default -> piece = " ";
+                    }
+                }
+                s.append(new String(colorSet + piece));
+                s.append("");
+
+            }
+        }
+        s.append("\n\n");
         return s.toString();
     }
 
