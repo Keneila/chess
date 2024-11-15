@@ -62,7 +62,7 @@ public class ServerFacade {
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-            if (token != null && !token.isEmpty()){
+            if (token != null && !token.isEmpty()) {
                 http.setRequestProperty("authorization", token);
             }
             writeBody(requestBody, http);

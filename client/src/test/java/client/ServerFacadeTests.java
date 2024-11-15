@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.ErrorMessage;
@@ -30,8 +32,13 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
     @Test
-    public void observeTest() throws ErrorMessage {
+    public void joinGameTest() throws ErrorMessage {
         Assertions.assertDoesNotThrow(()-> facade.joinGame("egeebncbxe", "white", 2));
+    }
+    @Test
+    public void printTest() throws ErrorMessage {
+        ChessGame g = new ChessGame();
+        System.out.println(g.getBoard().toString());
     }
 
 

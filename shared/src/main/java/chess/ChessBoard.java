@@ -2,7 +2,7 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Objects;
-
+import static ui.EscapeSequences.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -162,23 +162,40 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int x = 1;
-        int y = 8;
+        int checker = 0;
         for (ChessPiece[] r : Arrays.asList(squares).reversed()){
-            x=1;
             s.append("\n");
+            checker = checker-1;
             for(ChessPiece p : r){
+                if (checker == 0){
+                    s.append(SET_BG_COLOR_RED);
+                    checker = 1;
+                } else {
+                    s.append(SET_BG_COLOR_WHITE);
+                    checker = 0;
+                }
+                String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
+                String piece = EMPTY;
                 if (p != null){
-                    s.append(p.getPieceType().name() + p.getTeamColor().name());
-                    s.append(" ");
+                    ChessGame.TeamColor color = p.getTeamColor();
+                    switch (color){
+                        case BLACK -> colorSet = SET_TEXT_COLOR_BLACK;
+                        case WHITE -> colorSet = SET_TEXT_COLOR_BLUE;
+                    }
+                    switch (p.getPieceType()){
+                        case ROOK -> piece = BLACK_ROOK;
+                        case KING -> piece = BLACK_KING;
+                        case BISHOP -> piece = BLACK_BISHOP;
+                        case QUEEN -> piece = BLACK_QUEEN;
+                        case PAWN -> piece = BLACK_PAWN;
+                        case KNIGHT -> piece = BLACK_KNIGHT;
+                        case null, default -> piece = " ";
+                    }
                 }
-                else {
-                    s.append("(" + (y) + "," + (x) + ") ");
-                }
-                x++;
+                s.append(new String(colorSet + piece));
+                s.append("");
 
             }
-            y--;
         }
         s.append("\n\n");
         return s.toString();

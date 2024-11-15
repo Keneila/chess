@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import model.AuthData;
 import ui.server.ServerFacade;
+import static ui.EscapeSequences.*;
 
 public class InGameClient implements Client {
     private final ServerFacade server;
@@ -28,7 +29,30 @@ public class InGameClient implements Client {
     }
 
     public String printBoard(ChessBoard board, String color){
-        return board.toString();
+        StringBuilder s = new StringBuilder();
+        String whiteBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c   d  e  f  g   h   \n";
+        s.append(whiteBoard);
+        String b = board.toString();
+        String[] rows = b.split("\n");
+        int num = 0;
+        int up = 1;
+        if(color.equals("black")){
+            num = 9;
+            up = -1;
+        }
+        for (String row : rows){
+            if ((num != 0 && up == 1) || (num != 9 && up == -1)) {
+                s.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+                s.append(" " + num + " ");
+                s.append(row);
+                s.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
+                s.append(" " + num + " ");
+                s.append("\n");
+            }
+            num = num + up;
+        }
+        s.append(whiteBoard);
+        return s.toString();
     }
 
     @Override

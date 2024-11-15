@@ -45,10 +45,8 @@ public class LoggedInClient implements Client{
     private String join(String[] params) throws ErrorMessage{
         int gameID = Integer.parseInt(params[0]);
         String plaverColor = params[1];
-        System.out.println("Color:" + plaverColor);
-        System.out.println("ID:" + gameID);
         server.joinGame(auth.authToken(), plaverColor, gameID);
-        return "Joined Game as the " + plaverColor + " Player.";
+        return "Joined Game as the " + "" + " Player.";
     }
 
     public String help() {
@@ -72,12 +70,18 @@ public class LoggedInClient implements Client{
     }
     private String list() throws ErrorMessage{
         return server.listGames(auth.authToken()).toString();
-
     }
+
     private String observe(String... params) throws ErrorMessage{
-        for (GameData game : server.listGames(auth.authToken())){
-            if (game.gameID() == Integer.parseInt(params[0])){
-                return gameClient.printBoard(game.game().getBoard(), "white");
+        if (params.length == 1) {
+            try {
+                for (GameData game : server.listGames(auth.authToken())) {
+                    if (game.gameID() == Integer.parseInt(params[0])) {
+                        return gameClient.printBoard(game.game().getBoard(), "white");
+                    }
+                }
+            } catch (Exception e){
+                return "Please input a valid Game ID when attempting to observe.";
             }
         }
         return "Not a Valid Game ID.";
