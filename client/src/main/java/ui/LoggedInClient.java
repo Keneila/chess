@@ -6,7 +6,6 @@ import model.AuthData;
 import model.CreateGameRequest;
 import model.GameData;
 import ui.server.ServerFacade;
-import service.ErrorMessage;
 
 import java.util.Arrays;
 
@@ -38,12 +37,12 @@ public class LoggedInClient implements Client{
                 case "quit" -> quit();
                 default -> help();
             };
-        } catch (ErrorMessage ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    private String join(String[] params) throws ErrorMessage{
+    private String join(String[] params) throws Exception{
         if (params.length == 2){
             try {
                 int gameID = Integer.parseInt(params[0]);
@@ -70,7 +69,7 @@ public class LoggedInClient implements Client{
                 help - with possible commands
                 """;
     }
-    private String create(String... params) throws ErrorMessage{
+    private String create(String... params) throws Exception{
         if (params.length > 0) {
             server.createGame(params[0], auth.authToken());
             return "Game Created.";
@@ -78,7 +77,7 @@ public class LoggedInClient implements Client{
             return "Please include <Name> when creating a game.";
         }
     }
-    private String list() throws ErrorMessage{
+    private String list() throws Exception{
         try {
             StringBuilder s = new StringBuilder();
             for (GameData game : server.listGames(auth.authToken())){
@@ -86,12 +85,12 @@ public class LoggedInClient implements Client{
                         game.whiteUsername() + "  black: " + game.blackUsername() + "\n");
             }
             return s.toString();
-        } catch (ErrorMessage e) {
+        } catch (Exception e) {
             return "Invalid Authtoken. Please restart Server and Login Again.";
         }
     }
 
-    private String observe(String... params) throws ErrorMessage{
+    private String observe(String... params) throws Exception{
         if (params.length == 1) {
             try {
                 for (GameData game : server.listGames(auth.authToken())) {
@@ -106,7 +105,7 @@ public class LoggedInClient implements Client{
         }
         return "Needs a Valid Game ID.";
     }
-    private String logout() throws ErrorMessage{
+    private String logout() throws Exception{
         try{
         server.logout(auth.authToken());
         state = State.LOGGED_OUT;
@@ -115,13 +114,13 @@ public class LoggedInClient implements Client{
             return "Something went wrong. Please restart.";
         }
     }
-    private String quit() throws ErrorMessage{
+    private String quit() throws Exception{
         server.logout(auth.authToken());
         state = State.LOGGED_OUT;
         return "quit";
     }
 
-    private String delete() throws ErrorMessage{
+    private String delete() throws Exception{
         server.deleteDB();
         return "Deleted Database";
     }

@@ -4,7 +4,6 @@ import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
 import ui.server.ServerFacade;
-import service.ErrorMessage;
 
 import java.util.Arrays;
 
@@ -32,7 +31,7 @@ public class StartingClient implements Client{
                 """;
     }
 
-    private String register(String... params) throws ErrorMessage{
+    private String register(String... params) throws Exception{
         if (params.length >= 3) {
             auth = server.register(new UserData(params[0], params[1],params[2]));
             lClient.setAuth(auth);
@@ -42,7 +41,7 @@ public class StartingClient implements Client{
         }
         return "Expected: register <USERNAME> <PASSWORD> <EMAIL>";
     }
-    private String login(String... params) throws ErrorMessage{
+    private String login(String... params) throws Exception{
         if (params.length >= 2) {
             try{
             auth = server.login(new LoginRequest(params[0], params[1]));
@@ -58,7 +57,7 @@ public class StartingClient implements Client{
         }
     }
 
-    private String quit() throws ErrorMessage{
+    private String quit() throws Exception{
         return "quit";
     }
 
@@ -74,12 +73,12 @@ public class StartingClient implements Client{
                 case "quit" -> quit();
                 default -> help();
             };
-        } catch (ErrorMessage ex) {
+        } catch (Exception ex) {
             return ex.getMessage();
         }
     }
 
-    private String delete() throws ErrorMessage{
+    private String delete() throws Exception{
         server.deleteDB();
         return "Delete";
     }

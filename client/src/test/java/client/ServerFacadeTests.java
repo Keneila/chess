@@ -32,58 +32,58 @@ public class ServerFacadeTests {
 
 
     @BeforeEach
-    public void toDo() throws ErrorMessage {
+    public void toDo() throws Exception {
         facade.deleteDB();
     }
     @Test
-    public void registerTest() throws ErrorMessage {
+    public void registerTest() throws Exception {
         Assertions.assertDoesNotThrow(()-> facade.register(new UserData("u","p","e")));
         Assertions.assertDoesNotThrow(()-> facade.register(new UserData("y","f","r")));
     }
     @Test
-    public void registerFailTest() throws ErrorMessage {
+    public void registerFailTest() throws Exception {
         Assertions.assertDoesNotThrow(()-> facade.register(new UserData("u","p","e")));
         Assertions.assertThrows(Exception.class, ()-> facade.register(new UserData("u","p","e")));
         Assertions.assertThrows(Exception.class, ()-> facade.register(new UserData(null,"p","e")));
     }
     @Test
-    public void loginTest() throws ErrorMessage {
+    public void loginTest() throws Exception {
         Assertions.assertDoesNotThrow(()-> facade.register(new UserData("u","p","e")));
         Assertions.assertDoesNotThrow(()-> facade.login(new LoginRequest("u","p")));
     }
     @Test
-    public void loginFailTest() throws ErrorMessage {
+    public void loginFailTest() throws Exception {
         Assertions.assertDoesNotThrow(()-> facade.register(new UserData("u","p","e")));
         Assertions.assertThrows(Exception.class, ()-> facade.login(new LoginRequest("u","e")));
         Assertions.assertThrows(Exception.class, ()-> facade.login(new LoginRequest("e","p")));
         Assertions.assertThrows(Exception.class, ()-> facade.login(new LoginRequest(null,"p")));
     }
     @Test
-    public void logoutTest() throws ErrorMessage {
+    public void logoutTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertDoesNotThrow(()-> facade.logout(auth.authToken()));
     }
     @Test
-    public void logoutFailTest() throws ErrorMessage {
+    public void logoutFailTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertThrows(Exception.class, ()-> facade.logout("g"));
         Assertions.assertDoesNotThrow(()-> facade.logout(auth.authToken()));
         Assertions.assertThrows(Exception.class, ()-> facade.logout(auth.authToken()));
     }
     @Test
-    public void createGameTest() throws ErrorMessage {
+    public void createGameTest() throws Exception{
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name",auth.authToken()));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name2",auth.authToken()));
     }
     @Test
-    public void createGameFailTest() throws ErrorMessage {
+    public void createGameFailTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertThrows(Exception.class, ()-> facade.createGame("Name","auth.authToken()"));
         Assertions.assertThrows(Exception.class, ()-> facade.createGame(null,auth.authToken()));
     }
     @Test
-    public void listGameTest() throws ErrorMessage {
+    public void listGameTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertEquals(0, facade.listGames(auth.authToken()).size());
         Assertions.assertDoesNotThrow(()-> facade.listGames(auth.authToken()));
@@ -92,7 +92,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals(2, facade.listGames(auth.authToken()).size());
     }
     @Test
-    public void listGamesFailTest() throws ErrorMessage {
+    public void listGamesFailTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertThrows(Exception.class, ()-> facade.listGames("auth.authToken()"));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name",auth.authToken()));
@@ -100,14 +100,14 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, ()-> facade.listGames(null));
     }
     @Test
-    public void joinGameTest() throws ErrorMessage {
+    public void joinGameTest() throws Exception {
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name",auth.authToken()));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name2",auth.authToken()));
         Assertions.assertDoesNotThrow(()-> facade.joinGame(auth.authToken(), "white", 1));
     }
     @Test
-    public void joinGameFailTest() throws ErrorMessage {
+    public void joinGameFailTest() throws Exception {
         Assertions.assertThrows(Exception.class, ()-> facade.joinGame("", "white", 1));
         AuthData auth = facade.register(new UserData("u","p","e"));
         Assertions.assertDoesNotThrow(()-> facade.createGame("Name",auth.authToken()));

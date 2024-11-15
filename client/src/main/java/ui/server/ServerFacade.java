@@ -20,43 +20,43 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void deleteDB() throws ErrorMessage {
+    public void deleteDB() throws Exception {
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
     }
 
-    public AuthData register(UserData user) throws ErrorMessage {
+    public AuthData register(UserData user) throws Exception {
         var path = "/user";
         return this.makeRequest("POST", path, user, null, AuthData.class);
     }
 
-    public AuthData login(LoginRequest user) throws ErrorMessage {
+    public AuthData login(LoginRequest user) throws Exception {
         var path = "/session";
         return this.makeRequest("POST", path, user, null, AuthData.class);
     }
 
-    public void logout(String token) throws ErrorMessage {
+    public void logout(String token) throws Exception {
         var path = "/session";
         this.makeRequest("DELETE", path, null, token, null);
     }
 
-    public int createGame(String gameName, String token) throws ErrorMessage {
+    public int createGame(String gameName, String token) throws Exception {
         var path = "/game";
         record gameN (String gameName){};
         record gameIdClass (int gameID){};
         return this.makeRequest("POST", path, new gameN(gameName), token, gameIdClass.class ).gameID();
     }
-    public Collection<GameData> listGames(String token) throws ErrorMessage {
+    public Collection<GameData> listGames(String token) throws Exception {
         var path = "/game";
         return this.makeRequest("GET", path, null, token, ListGamesResponse.class).games();
     }
 
-    public void joinGame(String token, String playerColor, int gameID) throws ErrorMessage {
+    public void joinGame(String token, String playerColor, int gameID) throws Exception {
         var path = "/game";
         this.makeRequest("PUT", path, new JoinGameRequest(playerColor,gameID), token, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object requestBody, String token, Class<T> responseClass) throws ErrorMessage {
+    private <T> T makeRequest(String method, String path, Object requestBody, String token, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -70,7 +70,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new ErrorMessage(500, ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
     }
 
@@ -85,11 +85,11 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ErrorMessage {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             http.getErrorStream();
-            throw new ErrorMessage(status, "http failure: " + status);
+            throw new Exception("http failure: " + status);
         }
     }
 

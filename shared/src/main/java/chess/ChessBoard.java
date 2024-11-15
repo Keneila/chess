@@ -2,8 +2,7 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Objects;
-import static ui.EscapeSequences.*;
-
+import static chess.EscapeSequences.*;
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
