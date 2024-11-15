@@ -3,6 +3,12 @@ package ui;
 import chess.ChessBoard;
 import model.AuthData;
 import ui.server.ServerFacade;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import static ui.EscapeSequences.*;
 
 public class InGameClient implements Client {
@@ -30,18 +36,19 @@ public class InGameClient implements Client {
 
     public String printBoard(ChessBoard board, String color){
         StringBuilder s = new StringBuilder();
-        String whiteBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f  g   h     "+ SET_BG_COLOR_DARK_GREY + "\n";
+        String whiteBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
         s.append(whiteBoard);
         String b = board.toString();
         String[] rows = b.split("\n");
         int num = 0;
         int up = 1;
         if(color.equals("black")){
-            num = 9;
+            num = 8;
             up = -1;
+            Collections.reverse(Arrays.asList(rows));
         }
         for (String row : rows){
-            if ((num != 0 && up == 1) || (num != 9 && up == -1)) {
+            if (num != 0 ) {
                 s.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
                 s.append(" " + num + " ");
                 s.append(row);
