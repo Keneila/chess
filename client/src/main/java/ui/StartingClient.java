@@ -40,17 +40,22 @@ public class StartingClient implements Client{
             state = State.LOGGED_IN;
             return "Register successful";
         }
-        throw new ErrorMessage(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+        return "Expected: register <USERNAME> <PASSWORD> <EMAIL>";
     }
     private String login(String... params) throws ErrorMessage{
         if (params.length >= 2) {
+            try{
             auth = server.login(new LoginRequest(params[0], params[1]));
             lClient.setAuth(auth);
             gClient.setAuth(auth);
             state = State.LOGGED_IN;
             return "Login successful.";
+            } catch (Exception e) {
+                return "Incorrect Username or Password";
+            }
+        } else {
+            return "Expected: login <USERNAME> <PASSWORD>";
         }
-        throw new ErrorMessage(400, "Expected: <USERNAME> <PASSWORD>");
     }
 
     private String quit() throws ErrorMessage{
