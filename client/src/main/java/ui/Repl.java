@@ -3,10 +3,13 @@ package ui;
 import java.util.Scanner;
 
 import ui.server.ServerFacade;
+import ui.websocket.ServerMessageHandler;
+import websocket.messages.ServerMessage;
+
 import static ui.EscapeSequences.*;
 
 
-public class Repl {
+public class Repl implements ServerMessageHandler {
     private final StartingClient sClient;
     private final LoggedInClient lClient;
     private final InGameClient gClient;
@@ -48,6 +51,11 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage notification) {
+        System.out.println(SET_TEXT_COLOR_RED + notification.getServerMessageType());
+        printPrompt();
     }
 
     private void printPrompt() {
