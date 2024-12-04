@@ -1,6 +1,7 @@
 package ui.websocket;
 
 import com.google.gson.Gson;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 
@@ -41,6 +42,15 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void joinGame(String auth, Integer gameID){
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

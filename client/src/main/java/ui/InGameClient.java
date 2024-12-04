@@ -5,6 +5,9 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import model.AuthData;
 import ui.server.ServerFacade;
+import ui.websocket.ServerMessageHandler;
+import ui.websocket.WebSocketFacade;
+import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +21,8 @@ public class InGameClient implements Client {
     private final String serverUrl;
     private State state;
     private AuthData auth = null;
+    private ServerMessageHandler notificationHandler;
+    private WebSocketFacade ws;
 
     public InGameClient(ServerFacade server, String serverUrl, State state) {
         this.server = server;
@@ -41,6 +46,11 @@ public class InGameClient implements Client {
                 return ex.getMessage();
             }
         }
+
+    public void join(Integer gameID) throws Exception {
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.joinGame(auth.authToken(), gameID);
+    }
 
     private String leave() {
         state = State.LOGGED_IN;

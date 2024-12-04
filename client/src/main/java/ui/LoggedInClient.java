@@ -57,6 +57,7 @@ public class LoggedInClient implements Client{
                 }
                 server.joinGame(auth.authToken(), playerColor, gameID);
                 state = State.PLAYING;
+                gameClient.join(gameID);
                 return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
             } catch (Exception e) {
                 return "Not an Valid Spot in A Game Right Now. Please pick something else.";
