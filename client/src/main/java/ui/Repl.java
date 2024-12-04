@@ -17,7 +17,7 @@ public class Repl implements ServerMessageHandler {
 
     public Repl(String serverUrl) {
         ServerFacade server = new ServerFacade(serverUrl);
-        gClient = new InGameClient(server,serverUrl,state);
+        gClient = new InGameClient(server,serverUrl,state, this);
         lClient = new LoggedInClient(server,serverUrl, state, gClient);
         sClient = new StartingClient(server,serverUrl,state,lClient,gClient);
     }

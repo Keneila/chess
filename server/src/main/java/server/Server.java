@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import model.*;
 import com.google.gson.Gson;
+import server.websocket.WebSocketHandler;
 import service.ErrorMessage;
 import service.Message;
 import spark.*;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 
 public class Server {
     private  Service service;
+    private WebSocketHandler webSocketHandler;
 
     public int run(int desiredPort) {
         UserDAO userDAO = new MemUserDAO();
@@ -28,10 +30,11 @@ public class Server {
             throw new RuntimeException(e);
         }
         service = new Service(userDAO,authDAO,gameDAO);
+        webSocketHandler = new WebSocketHandler();
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
+        Spark.webSocket("/ws", webSocketHandler);
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::deleteDB);
         Spark.post("/user", this::register);

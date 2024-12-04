@@ -23,11 +23,13 @@ public class InGameClient implements Client {
     private AuthData auth = null;
     private ServerMessageHandler notificationHandler;
     private WebSocketFacade ws;
+    private Integer gameID;
 
-    public InGameClient(ServerFacade server, String serverUrl, State state) {
+    public InGameClient(ServerFacade server, String serverUrl, State state, ServerMessageHandler handler) {
         this.server = server;
         this.serverUrl = serverUrl;
         this.state = state;
+        this.notificationHandler = handler;
     }
 
     @Override
@@ -47,13 +49,15 @@ public class InGameClient implements Client {
             }
         }
 
-    public void join(Integer gameID) throws Exception {
+    public void join(Integer gameID, String color) throws Exception {
+        this.gameID = gameID;
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.joinGame(auth.authToken(), gameID);
     }
 
     private String leave() {
         state = State.LOGGED_IN;
+        ws.leave(auth.authToken(), gameID);
         return "Left game";
     }
 
