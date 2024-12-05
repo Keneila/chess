@@ -54,8 +54,21 @@ public class WebSocketHandler {
         connections.broadcast(user, gameID, notif);
     }
 
-    private void leave(String user, Integer gameID) throws IOException {
+    private void leave(String user, Integer gameID) throws IOException{
         connections.remove(user);
+        try {
+
+            GameData data = gameDAO.findGame(gameID);
+            if (data.blackUsername().equals(user)){
+                data = new GameData(data.gameID(), data.whiteUsername(), null, data.gameName(), data.game());
+            }
+            if (data.whiteUsername().equals(user)){
+                data = new GameData(data.gameID(), null, data.blackUsername(), data.gameName(), data.game());
+            }
+            gameDAO.updateGame(data);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
         var message = String.format("%s left the game.", user);
         var notif = new ServerMessage(NOTIFICATION, message);
         connections.broadcast(user, gameID, notif);

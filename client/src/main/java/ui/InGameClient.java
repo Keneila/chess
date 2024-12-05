@@ -101,6 +101,7 @@ public class InGameClient implements Client {
                 }
                 Collection<ChessMove> moves = game.validMoves(pos);
                 Collection<ChessPosition> spots = new java.util.ArrayList<>(List.of());
+                spots.add(pos);
                 if(moves!= null) {
                     for (var move : moves) {
                         spots.add(move.getEndPosition());
