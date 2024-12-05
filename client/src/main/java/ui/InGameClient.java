@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.AuthData;
+import model.GameData;
 import ui.server.ServerFacade;
 import ui.websocket.ServerMessageHandler;
 import ui.websocket.WebSocketFacade;
@@ -21,6 +22,7 @@ public class InGameClient implements Client {
     private final String serverUrl;
     private State state;
     private AuthData auth = null;
+    private ChessGame game = null;
     private ServerMessageHandler notificationHandler;
     private WebSocketFacade ws;
     private Integer gameID;
@@ -38,19 +40,63 @@ public class InGameClient implements Client {
             var tokens = line.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            if(state == State.WATCHING){
+                return switch (cmd) {
+                    case "redraw" -> redraw();
+                    case "moves" -> highlight(params);
+                    case "leave" -> leave();
+                    default -> helpObs();
+                };
+            } else {
             return switch (cmd) {
+                case "redraw" -> redraw();
+                case "make" -> makeMove(params);
+                case "moves" -> highlight(params);
+                case "resign" -> resign();
                 case "leave" -> leave();
-                case "quit" -> "quit";
-                default -> "type leave to leave the game.";
+                default -> help();
             };
+            }
 
         } catch(Exception ex){
                 return ex.getMessage();
             }
         }
 
-    public void join(Integer gameID, String color) throws Exception {
+    private String resign() {
+    }
+
+    private String highlight(String[] params) {
+    }
+
+    private String makeMove(String[] params) {
+    }
+
+    private String redraw() {
+    }
+
+    public String help() {
+        return """
+                redraw - chess board
+                make move <x,y> <x2,y2> - move piece to second coordinates
+                moves <x,y> - highlight legal moves of piece at coordinates
+                leave - to exit game
+                resign - forfeit game
+                help - with possible commands
+                """;
+    }
+    public String helpObs() {
+        return """
+                redraw - chess board
+                moves <x,y> - highlight legal moves of piece at coordinates
+                leave - to exit game
+                help - with possible commands
+                """;
+    }
+
+    public void join(Integer gameID, ChessGame game) throws Exception {
         this.gameID = gameID;
+        this.game = game;
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.joinGame(auth.authToken(), gameID);
     }
@@ -92,53 +138,7 @@ public class InGameClient implements Client {
     }
 
     public String toStringBoard(boolean direction, ChessPiece[][] squares) {
-        StringBuilder s = new StringBuilder();
-        int checker = 0;
-        var list = squares;
-        if(direction){
-            list = Arrays.asList(list).reversed().toArray(new ChessPiece[8][8]);
-            for (int i=0; i < list.length; i++) {
-                var row = list[i];
-                Arrays.asList(row).reversed();
-                list[i] = Arrays.asList(row).reversed().toArray(new ChessPiece[8]);
-            }
-        }
-        for (ChessPiece[] r : list){
-            s.append("\n");
-            checker = checker-1;
-            for(ChessPiece p : r){
-                if (checker == 0){
-                    s.append(SET_BG_COLOR_RED);
-                    checker = 1;
-                } else {
-                    s.append(SET_BG_COLOR_WHITE);
-                    checker = 0;
-                }
-                String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
-                String piece = EMPTY;
-                if (p != null){
-                    ChessGame.TeamColor color = p.getTeamColor();
-                    switch (color){
-                        case BLACK -> colorSet = SET_TEXT_COLOR_BLACK;
-                        case WHITE -> colorSet = SET_TEXT_COLOR_BLUE;
-                    }
-                    switch (p.getPieceType()){
-                        case ROOK -> piece = BLACK_ROOK;
-                        case KING -> piece = BLACK_KING;
-                        case BISHOP -> piece = BLACK_BISHOP;
-                        case QUEEN -> piece = BLACK_QUEEN;
-                        case PAWN -> piece = BLACK_PAWN;
-                        case KNIGHT -> piece = BLACK_KNIGHT;
-                        case null, default -> piece = " ";
-                    }
-                }
-                s.append(new String(colorSet + piece));
-                s.append("");
-
-            }
-        }
-        s.append("\n\n");
-        return s.toString();
+        return null;
     }
 
     @Override

@@ -49,16 +49,19 @@ public class LoggedInClient implements Client{
                 String playerColor = params[1];
                 int gameID = 0;
                 int num = 0;
+                ChessGame g = null;
                 for (GameData game : server.listGames(auth.authToken())) {
                     num++;
                     if(num == id){
                         gameID = game.gameID();
+                        g = game.game();
                     }
                 }
                 server.joinGame(auth.authToken(), playerColor, gameID);
                 state = State.PLAYING;
-                gameClient.join(gameID, playerColor);
-                return gameClient.printBoard(new ChessGame().getBoard(), "white") + gameClient.printBoard(new ChessGame().getBoard(), "black");
+                gameClient.join(gameID, g);
+                assert g != null;
+                return gameClient.printBoard(g.getBoard(), playerColor);
             } catch (Exception e) {
                 return "Not an Valid Spot in A Game Right Now. Please pick something else.";
             }
@@ -111,9 +114,10 @@ public class LoggedInClient implements Client{
                 for (GameData game : server.listGames(auth.authToken())) {
                     num++;
                     if (num == Integer.parseInt(params[0])) {
+                        server.joinGame(auth.authToken(), null, num);
                         state = State.WATCHING;
-                        return gameClient.printBoard(new ChessGame().getBoard(), "white")
-                                + gameClient.printBoard(new ChessGame().getBoard(), "black");
+                        gameClient.join(num, game.game());
+                        return gameClient.printBoard(game.game().getBoard(), "white");
                     }
                 }
             } catch (Exception e){
