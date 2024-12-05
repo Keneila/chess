@@ -66,6 +66,14 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
+    public  String getUsername(String token) {
+        try {
+            return authDAO.findAuth(token).username();
+        }catch (Exception e){
+            return null;
+        }
+    }
+
     /**
      * Logs User In by creating an Authtoken
      * and checking the username and password ro see it they exist.

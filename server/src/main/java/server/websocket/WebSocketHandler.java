@@ -20,6 +20,10 @@ import static websocket.messages.ServerMessage.ServerMessageType.*;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private Server server;
+    public WebSocketHandler(Server server) {
+        this.server = server;
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -49,8 +53,10 @@ public class WebSocketHandler {
     }
 
     private void connect(Session session, String authToken, Integer gameID) throws IOException {
+        String username = server.getUser(authToken);
         connections.add(session,authToken,gameID);
-        var notif = new ServerMessage(NOTIFICATION, "joined");
+        var message = String.format("%s joined the game.", username);
+        var notif = new ServerMessage(NOTIFICATION, message);
         connections.broadcast(authToken,gameID, notif);
     }
 
