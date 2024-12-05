@@ -2,9 +2,11 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.SQLAuthDAO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import server.Server;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
