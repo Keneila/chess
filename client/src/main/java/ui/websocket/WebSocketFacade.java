@@ -30,6 +30,9 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                    if (notification.getMessage() == null){
+                        notification.setMessage("");
+                    }
                     notificationHandler.notify(notification);
                 }
             });

@@ -2,6 +2,7 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -9,11 +10,13 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
 import service.Service;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ExtendedMessage;
 import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.atomic.LongAccumulator;
 
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 
@@ -39,6 +42,16 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         String username = service.getUsername(command.getAuthToken());
+        try {
+            if (authDAO.findAuth(command.getAuthToken()) == null) {
+                throw new DataAccessException("Bad authtoken");
+            }
+        } catch (Exception e) {
+            var notif = new ServerMessage(ERROR);
+            notif.setErrorMessage(e.getMessage());
+            session.getRemote().sendString(notif.toString());
+            return;
+        }
         switch (command.getCommandType()) {
             case CONNECT -> connect(session, username,command.getAuthToken(), command.getGameID());
             case MAKE_MOVE -> makeMove(session, command.getAuthToken(),command.getGameID());
@@ -57,12 +70,11 @@ public class WebSocketHandler {
     private void leave(String user, Integer gameID) throws IOException{
         connections.remove(user);
         try {
-
             GameData data = gameDAO.findGame(gameID);
-            if (data.blackUsername().equals(user)){
+            if (Objects.equals(data.whiteUsername(),user)){
                 data = new GameData(data.gameID(), data.whiteUsername(), null, data.gameName(), data.game());
             }
-            if (data.whiteUsername().equals(user)){
+            if (Objects.equals(data.whiteUsername(),user)){
                 data = new GameData(data.gameID(), null, data.blackUsername(), data.gameName(), data.game());
             }
             gameDAO.updateGame(data);
@@ -79,11 +91,15 @@ public class WebSocketHandler {
     }
 
     private void connect(Session session, String user, String auth, Integer gameID) throws IOException {
-        connections.add(session,user,gameID);
         String color = "";
         ServerMessage notif;
+        String message;
+        connections.add(session,user,gameID);
         try {
             GameData data = gameDAO.findGame(gameID);
+            if(data == null){
+                throw new DataAccessException("Invalid Input");
+            }
             if (Objects.equals(data.blackUsername(), user)){
                 color = "black";
             } else if (Objects.equals(data.whiteUsername(), user)){
@@ -91,13 +107,16 @@ public class WebSocketHandler {
             } else {
                 color = "an observer";
             }
+            message = String.format("%s joined the game as %s.", user, color);
+            notif = new ServerMessage(NOTIFICATION, message);
+            connections.broadcast(user,gameID, notif);
+            notif = new ServerMessage(LOAD_GAME,data.game(), null);
+            connections.sendOne(user, notif);
         } catch (DataAccessException e) {
-            var message = String.format("Error with connecting.");
-            notif = new ServerMessage(ERROR, message);
+            notif = new ServerMessage(ERROR);
+            notif.setErrorMessage(e.getMessage());
+            connections.sendOne(user, notif);
         }
-        var message = String.format("%s joined the game as %s.", user, color);
-        notif = new ServerMessage(NOTIFICATION, message);
-        connections.broadcast(user,gameID, notif);
     }
 
 }

@@ -291,4 +291,8 @@ public class InGameClient implements Client {
     public void setAuth(AuthData auth) {
         this.auth = auth;
     }
+
+    public String getColor() {
+        return color;
+    }
 }
