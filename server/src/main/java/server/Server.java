@@ -30,7 +30,7 @@ public class Server {
             throw new RuntimeException(e);
         }
         service = new Service(userDAO,authDAO,gameDAO);
-        webSocketHandler = new WebSocketHandler(this);
+        webSocketHandler = new WebSocketHandler(service, userDAO,authDAO,gameDAO);
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -135,9 +135,6 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
-    }
-    public String getUser(String token){
-        return service.getUsername(token);
     }
     private Object deleteDB(Request rec, Response res){
         try {
