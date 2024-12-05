@@ -47,21 +47,25 @@ public class LoggedInClient implements Client{
             try {
                 int id = Integer.parseInt(params[0]);
                 String playerColor = params[1];
-                int gameID = 0;
-                int num = 0;
-                ChessGame g = null;
-                for (GameData game : server.listGames(auth.authToken())) {
-                    num++;
-                    if(num == id){
-                        gameID = game.gameID();
-                        g = game.game();
+                if("black".equalsIgnoreCase(playerColor) || "white".equalsIgnoreCase(playerColor)) {
+                    int gameID = 0;
+                    int num = 0;
+                    ChessGame g = null;
+                    for (GameData game : server.listGames(auth.authToken())) {
+                        num++;
+                        if (num == id) {
+                            gameID = game.gameID();
+                            g = game.game();
+                        }
                     }
+                    server.joinGame(auth.authToken(), playerColor, gameID);
+                    state = State.PLAYING;
+                    gameClient.join(gameID, g, playerColor);
+                    assert g != null;
+                    return gameClient.printBoard(g.getBoard(), playerColor);
+                } else {
+                    return "Not an Valid Spot in A Game Right Now. Please pick something else.";
                 }
-                server.joinGame(auth.authToken(), playerColor, gameID);
-                state = State.PLAYING;
-                gameClient.join(gameID, g);
-                assert g != null;
-                return gameClient.printBoard(g.getBoard(), playerColor);
             } catch (Exception e) {
                 return "Not an Valid Spot in A Game Right Now. Please pick something else.";
             }
@@ -114,9 +118,9 @@ public class LoggedInClient implements Client{
                 for (GameData game : server.listGames(auth.authToken())) {
                     num++;
                     if (num == Integer.parseInt(params[0])) {
-                        server.joinGame(auth.authToken(), null, num);
+                        server.joinGame(auth.authToken(), "obs", game.gameID());
                         state = State.WATCHING;
-                        gameClient.join(num, game.game());
+                        gameClient.join(game.gameID(), game.game(), null);
                         return gameClient.printBoard(game.game().getBoard(), "white");
                     }
                 }

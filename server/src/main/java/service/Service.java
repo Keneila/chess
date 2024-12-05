@@ -200,6 +200,8 @@ public class Service {
                         throw new ErrorMessage(403, "Error: already taken");
                     }
                     updated = new GameData(gameID, auth.username(), game.blackUsername(), game.gameName(),game.game());
+                } else if ("obs".equalsIgnoreCase(playerColor)){
+                    updated = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(),game.game());
                 } else {
                     throw new ErrorMessage(400, "Error: bad request");
                 }
