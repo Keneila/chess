@@ -1,8 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import model.AuthData;
 import model.GameData;
 import ui.server.ServerFacade;
@@ -97,22 +95,34 @@ public class InGameClient implements Client {
         if (params.length == 1) {
             String[] coor = params[0].split(",");
             if(coor.length==2){
-                int[] xy = parseCoor(coor);
-                if(xy == null){
+                ChessPosition pos = parseCoor(coor);
+                if(pos == null){
                     return "Please input coordinates within the range of a-h and 1-8";
                 }
-                return Arrays.toString(xy);
+                Collection<ChessMove> moves = game.validMoves(pos);
+                Collection<ChessPosition> spots = new java.util.ArrayList<>(List.of());
+                if(moves!= null) {
+                    for (var move : moves) {
+                        spots.add(move.getEndPosition());
+                    }
+                }
+                if (color == null){
+                    return printBoard(game.getBoard(),"white",spots);
+                } else {
+                    return printBoard(game.getBoard(), color, spots);
+                }
             }
         }
         return "Please input coordinates in this syntax: x,y";
     }
 
-    private int[] parseCoor(String[] params){
+    private ChessPosition parseCoor(String[] params){
+
         int[] coor = new int[2];
         try{
             int y = Integer.parseInt(params[1]);
             if(y > 0 && y <9){
-                coor[1] = y;
+                coor[1] = 9-y;
             }
         } catch (NumberFormatException e) {
             return null;
@@ -127,7 +137,7 @@ public class InGameClient implements Client {
                 return null;
             }
         }
-        return coor;
+        return new ChessPosition(coor[1], coor[0]);
     }
 
     private String makeMove(String[] params) {
@@ -141,9 +151,9 @@ public class InGameClient implements Client {
           }
         }
         if(state == State.WATCHING){
-            return printBoard(game.getBoard(), "white" );
+            return printBoard(game.getBoard(), "white", null);
         }
-        return printBoard(game.getBoard(), color );
+        return printBoard(game.getBoard(), color , null);
     }
 
     public String help() {
@@ -180,17 +190,17 @@ public class InGameClient implements Client {
     }
 
 
-    public String printBoard(ChessBoard board, String color){
+    public String printBoard(ChessBoard board, String color, Collection<ChessPosition> positions){
         StringBuilder s = new StringBuilder();
-        String borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
-        String b = toStringBoard(false, board.getSquares());
-        int num = 9;
-        int up = -1;
+        String borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    h   g   f  e   d  c   b   a    " + SET_BG_COLOR_DARK_GREY + "\n";
+        String b = toStringBoard(false, board.getSquares(), positions);
+        int num = 0;
+        int up = 1;
         if(color.equals("white")){
-            b = toStringBoard(true, board.getSquares());
-            num = 0;
-            up = 1;
-            borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    h   g   f  e   d  c   b   a    "+ SET_BG_COLOR_DARK_GREY + "\n";
+            b = toStringBoard(true, board.getSquares(), positions);
+            num = 9;
+            up = -1;
+            borderBoard = SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK + "    a   b   c  d   e  f   g   h    "+ SET_BG_COLOR_DARK_GREY + "\n";
         }
         String[] rows = b.split("\n");
         s.append(borderBoard);
@@ -209,7 +219,7 @@ public class InGameClient implements Client {
         return s.toString();
     }
 
-    public String toStringBoard(boolean direction, ChessPiece[][] squares) {
+    public String toStringBoard(boolean direction, ChessPiece[][] squares, Collection<ChessPosition> positions) {
         StringBuilder s = new StringBuilder();
         int checker = 0;
         var list = squares;
@@ -221,17 +231,26 @@ public class InGameClient implements Client {
                 list[i] = Arrays.asList(row).reversed().toArray(new ChessPiece[8]);
             }
         }
+        int x=0;
         for (ChessPiece[] r : list){
+            x++;
             s.append("\n");
             checker = checker-1;
+            int y=0;
             for(ChessPiece p : r){
-                if (checker == 0){
-                    s.append(SET_BG_COLOR_RED);
-                    checker = 1;
-                } else {
-                    s.append(SET_BG_COLOR_WHITE);
-                    checker = 0;
+                y++;
+                    if (checker == 0) {
+                        s.append(SET_BG_COLOR_RED);
+                        checker = 1;
+                    } else {
+                        s.append(SET_BG_COLOR_WHITE);
+                        checker = 0;
+                    }
+                if(positions != null && !positions.isEmpty() &&
+                        positions.contains(new ChessPosition(x,y))){
+                    s.append(SET_BG_COLOR_GREEN);
                 }
+
                 String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
                 String piece = EMPTY;
                 if (p != null){

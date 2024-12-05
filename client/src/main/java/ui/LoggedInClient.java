@@ -62,7 +62,7 @@ public class LoggedInClient implements Client{
                     state = State.PLAYING;
                     gameClient.join(gameID, g, playerColor);
                     assert g != null;
-                    return gameClient.printBoard(g.getBoard(), playerColor);
+                    return gameClient.printBoard(g.getBoard(), playerColor, null);
                 } else {
                     return "Not an Valid Spot in A Game Right Now. Please pick something else.";
                 }
@@ -121,7 +121,7 @@ public class LoggedInClient implements Client{
                         server.joinGame(auth.authToken(), "obs", game.gameID());
                         state = State.WATCHING;
                         gameClient.join(game.gameID(), game.game(), null);
-                        return gameClient.printBoard(game.game().getBoard(), "white");
+                        return gameClient.printBoard(game.game().getBoard(), "white", null);
                     }
                 }
             } catch (Exception e){
