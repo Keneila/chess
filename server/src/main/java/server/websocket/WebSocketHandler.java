@@ -1,23 +1,23 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.*;
-import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import server.Server;
 import service.Service;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ExtendedMessage;
 import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.atomic.LongAccumulator;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static websocket.messages.ServerMessage.ServerMessageType.*;
 
 
@@ -54,13 +54,24 @@ public class WebSocketHandler {
         }
         switch (command.getCommandType()) {
             case CONNECT -> connect(session, username,command.getAuthToken(), command.getGameID());
-            case MAKE_MOVE -> makeMove(session, command.getAuthToken(),command.getGameID());
+            case MAKE_MOVE -> makeMove(session, command.getAuthToken(),command.getGameID(),command.getMove());
             case LEAVE -> leave(username,command.getGameID());
             case RESIGN -> resign(username,command.getGameID());
         }
     }
 
     private void resign(String user, Integer gameID) throws IOException {
+        try {
+            GameData data = gameDAO.findGame(gameID);
+            if (!Objects.equals(data.whiteUsername(), user) || !Objects.equals(data.blackUsername(), user) ) {
+                throw new DataAccessException("You aren't a player.");
+            }
+        } catch (Exception e) {
+                var notif = new ServerMessage(ERROR);
+                notif.setErrorMessage(e.getMessage());
+                connections.sendOne(user, notif);
+                return;
+            }
         connections.remove(user);
         var message = String.format("%s resigned from the game.", user);
         var notif = new ServerMessage(NOTIFICATION, message);
@@ -86,8 +97,48 @@ public class WebSocketHandler {
         connections.broadcast(user, gameID, notif);
     }
 
-    private void makeMove(Session session, String authToken, Integer gameID) {
-        
+    private void makeMove(Session session, String authToken, Integer gameID, ChessMove move) throws IOException {
+        ChessGame.TeamColor color = WHITE;
+        String user = service.getUsername(authToken);
+        ServerMessage notif;
+        String message;
+        try {
+            GameData data = gameDAO.findGame(gameID);
+            if(data == null){
+                throw new DataAccessException("Game Not Available.");
+            }
+            if (Objects.equals(data.blackUsername(), user)){
+                color = BLACK;
+            } else if (!Objects.equals(data.whiteUsername(), user)){
+                throw new DataAccessException("You aren't a player.");
+            }
+            if(data.game().getTeamTurn() != color){
+                throw new DataAccessException("Not your turn.");
+            }
+            if (data.game().validMoves(move.getStartPosition()).contains(move)){
+                if (data.game().getBoard().getPiece(move.getStartPosition()).getTeamColor() == color){
+                    message = String.format("%s moved %s to %s.", user,
+                            data.game().getBoard().getPiece(move.getStartPosition()).getPieceType(),
+                            move.getEndPosition().toString());
+                    data.game().makeMove(move);
+                    gameDAO.updateGame(new GameData(gameID, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
+
+                } else {
+                    throw new DataAccessException("Invalid Move. Not your piece.");
+                }
+            } else {
+                throw new DataAccessException("Invalid Move.");
+            }
+            notif = new ServerMessage(LOAD_GAME,data.game(), null);
+            connections.broadcast(user, gameID, notif);
+        } catch (Exception e) {
+            notif = new ServerMessage(ERROR);
+            notif.setErrorMessage(e.getMessage());
+            connections.sendOne(user, notif);
+            return;
+        }
+        notif = new ServerMessage(NOTIFICATION, message);
+        connections.broadcast(user, gameID, notif);
     }
 
     private void connect(Session session, String user, String auth, Integer gameID) throws IOException {

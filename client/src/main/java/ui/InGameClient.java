@@ -114,7 +114,7 @@ public class InGameClient implements Client {
                 }
             }
         }
-        return "Please input coordinates in this syntax: x,y";
+        return "Please input coordinates in this syntax: moves x,y";
     }
 
     private ChessPosition parseCoor(String[] params){
@@ -142,7 +142,30 @@ public class InGameClient implements Client {
     }
 
     private String makeMove(String[] params) {
-        return "Not Complete";
+        if (params.length == 2) {
+            String[] coorS = params[0].split(",");
+            String[] coorE = params[1].split(",");
+            if (coorS.length == 2 && coorE.length == 2) {
+                ChessPosition starPos = parseCoor(coorS);
+                ChessPosition endPos = parseCoor(coorE);
+                if (starPos == null || endPos == null) {
+                    return "Please input coordinates within the range of a-h and 1-8";
+                }
+                ChessPiece.PieceType promo = determinePromo(starPos, endPos);
+                ChessMove move = new ChessMove(starPos,endPos,promo);
+                ws.makeMove(auth.authToken(), gameID, move);
+                return "Moved Piece.";
+            }
+        }
+        return "Please input coordinates in this syntax:make x,y x2,y2";
+    }
+
+    private ChessPiece.PieceType determinePromo(ChessPosition starPos, ChessPosition endPos) {
+        ChessPiece.PieceType p = game.getBoard().getPiece(starPos).getPieceType();
+        if((p != ChessPiece.PieceType.PAWN) && (endPos.getRow() == 1 || endPos.getRow() == 8)) {
+            return ChessPiece.PieceType.QUEEN;
+        }
+        return null;
     }
 
     private String redraw() throws Exception {

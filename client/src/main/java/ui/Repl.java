@@ -56,6 +56,8 @@ public class Repl implements ServerMessageHandler {
     public void notify(ServerMessage notification) {
         if(notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             System.out.println("\n" + gClient.printBoard(notification.getGame().getBoard(),gClient.getColor(), null));
+        } else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            System.out.println(SET_TEXT_COLOR_BLUE + notification.getServerMessageType() + ": " + notification.getErrorMessage());
         } else {
             System.out.println(SET_TEXT_COLOR_BLUE + notification.getServerMessageType() + ": " + notification.getMessage());
         }

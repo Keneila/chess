@@ -121,7 +121,7 @@ public class LoggedInClient implements Client{
                         server.joinGame(auth.authToken(), "obs", game.gameID());
                         state = State.WATCHING;
                         gameClient.join(game.gameID(), game.game(), null);
-                        return "";
+                        return gameClient.printBoard(game.game().getBoard(), "white", null);
                     }
                 }
             } catch (Exception e){

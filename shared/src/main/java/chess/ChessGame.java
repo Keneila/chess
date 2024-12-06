@@ -16,7 +16,7 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
-
+    private Boolean done = false;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -153,6 +153,7 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)){
+            done = isIn(teamColor);
             return isIn(teamColor);
         } else {
             return false;
@@ -177,15 +178,20 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (!isInCheck(teamColor)){
+            done = isIn(teamColor);
             return isIn(teamColor);
         } else {
             return false;
         }
     }
 
+    public Boolean getDone() {
+        return done;
+    }
 
-
-
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
 
     /**
      * Sets this game's chessboard with a given board
