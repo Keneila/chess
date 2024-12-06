@@ -44,15 +44,15 @@ public class InGameClient implements Client {
                 if (state == State.WATCHING) {
                     return switch (cmd) {
                         case "redraw" -> redraw();
-                        case "moves" -> highlight(params);
+                        case "highlight" -> highlight(params);
                         case "leave" -> leave();
                         default -> helpObs();
                     };
                 } else {
                     return switch (cmd) {
                         case "redraw" -> redraw();
-                        case "make" -> makeMove(params);
-                        case "moves" -> highlight(params);
+                        case "move" -> makeMove(params);
+                        case "highlight" -> highlight(params);
                         case "resign" -> resign();
                         case "leave" -> leave();
                         default -> help();
@@ -206,8 +206,8 @@ public class InGameClient implements Client {
     public String help() {
         return """
                 redraw - chess board
-                make move <x,y> <x2,y2> - move piece to second coordinates
-                moves <x,y> - highlight legal moves of piece at coordinates
+                move <x,y> <x2,y2> - move piece to second coordinates
+                highlight <x,y> - highlight legal moves of piece at coordinates
                 leave - to exit game
                 resign - forfeit game
                 help - with possible commands
@@ -216,7 +216,7 @@ public class InGameClient implements Client {
     public String helpObs() {
         return """
                 redraw - chess board
-                moves <x,y> - highlight legal moves of piece at coordinates
+                highlight <x,y> - highlight legal moves of piece at coordinates
                 leave - to exit game
                 help - with possible commands
                 """;
