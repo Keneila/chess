@@ -63,8 +63,21 @@ public class WebSocketHandler {
     private void resign(String user, Integer gameID) throws IOException {
         try {
             GameData data = gameDAO.findGame(gameID);
-            if (!Objects.equals(data.whiteUsername(), user) || !Objects.equals(data.blackUsername(), user) ) {
+            if (!Objects.equals(data.whiteUsername(), user) && !Objects.equals(data.blackUsername(), user) ) {
                 throw new DataAccessException("You aren't a player.");
+            }
+            if(data.game().getDone()){
+                var message = "Game is already over.";
+                var notif = new ServerMessage(ERROR);
+                notif.setErrorMessage(message);
+                connections.sendOne(user, notif);
+            } else {
+                data.game().setDone(true);
+                gameDAO.updateGame(new GameData(gameID, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
+                var message = String.format("%s resigned from the game.", user);
+                var notif = new ServerMessage(NOTIFICATION, message);
+                connections.sendOne(user,notif);
+                connections.broadcast(user, gameID, notif);
             }
         } catch (Exception e) {
                 var notif = new ServerMessage(ERROR);
@@ -72,10 +85,7 @@ public class WebSocketHandler {
                 connections.sendOne(user, notif);
                 return;
             }
-        connections.remove(user);
-        var message = String.format("%s resigned from the game.", user);
-        var notif = new ServerMessage(NOTIFICATION, message);
-        connections.broadcast(user, gameID, notif);
+
     }
 
     private void leave(String user, Integer gameID) throws IOException{
@@ -99,6 +109,7 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, String authToken, Integer gameID, ChessMove move) throws IOException {
         ChessGame.TeamColor color = WHITE;
+        ChessGame.TeamColor other = BLACK;
         String user = service.getUsername(authToken);
         ServerMessage notif;
         String message;
@@ -107,8 +118,12 @@ public class WebSocketHandler {
             if(data == null){
                 throw new DataAccessException("Game Not Available.");
             }
+            if (data.game().getDone()){
+                throw new DataAccessException("Game is over, no more moves.");
+            }
             if (Objects.equals(data.blackUsername(), user)){
                 color = BLACK;
+                other = WHITE;
             } else if (!Objects.equals(data.whiteUsername(), user)){
                 throw new DataAccessException("You aren't a player.");
             }
@@ -122,7 +137,7 @@ public class WebSocketHandler {
                             move.getEndPosition().toString());
                     data.game().makeMove(move);
                     gameDAO.updateGame(new GameData(gameID, data.whiteUsername(), data.blackUsername(), data.gameName(), data.game()));
-
+                    check(data, color, other, user, gameID);
                 } else {
                     throw new DataAccessException("Invalid Move. Not your piece.");
                 }
@@ -140,6 +155,26 @@ public class WebSocketHandler {
         }
         notif = new ServerMessage(NOTIFICATION, message);
         connections.broadcast(user, gameID, notif);
+    }
+    private void check(GameData data, ChessGame.TeamColor color, ChessGame.TeamColor other, String user, Integer gameID) throws IOException {
+        if(data.game().isInCheck(color) || data.game().isInCheck(other)
+                || (data.game().isInCheckmate(color) || data.game().isInCheckmate(other))
+                || data.game().isInStalemate(color)) {
+            ServerMessage checking = null;
+            if (data.game().isInCheck(color)) {
+                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", color));
+            } else if (data.game().isInCheck(other)) {
+                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", other));
+            } else if (data.game().isInStalemate(color)){
+                checking = new ServerMessage(NOTIFICATION, "stalemate reached");
+            } else if (data.game().isInCheckmate(color)){
+                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost.", color));
+            } else {
+                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost. ", other));
+            }
+            connections.sendOne(user,checking);
+            connections.broadcast(user, gameID, checking);
+        }
     }
 
     private void connect(Session session, String user, String auth, Integer gameID) throws IOException {

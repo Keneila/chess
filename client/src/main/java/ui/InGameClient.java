@@ -86,6 +86,7 @@ public class InGameClient implements Client {
             resigning = 1;
             return "Are you sure you want to forfeit? Please input yes or no to confirm.";
         } else {
+            ws.resign(auth.authToken(),gameID);
             resigning=3;
             return "You are free to leave whenever you'd like.";
         }

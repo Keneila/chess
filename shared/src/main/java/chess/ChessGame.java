@@ -40,6 +40,7 @@ public class ChessGame {
         teamTurn = team;
     }
 
+
     /**
      * Enum identifying the 2 possible teams in a chess game
      */
