@@ -92,6 +92,15 @@ public class InGameClient implements Client {
     }
 
     private String highlight(String[] params) {
+        try {
+            for (GameData g : server.listGames(auth.authToken())) {
+                if (gameID == g.gameID()) {
+                    game = g.game();
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (params.length == 1) {
             String[] coor = params[0].split(",");
             if(coor.length==2){
@@ -220,7 +229,7 @@ public class InGameClient implements Client {
         String b = toStringBoard(false, board.getSquares(), positions);
         int num = 0;
         int up = 1;
-        if(color.equals("white")){
+        if(color.equals("white") || color.equals("obs")){
             b = toStringBoard(true, board.getSquares(), positions);
             num = 9;
             up = -1;
@@ -270,10 +279,17 @@ public class InGameClient implements Client {
                         s.append(SET_BG_COLOR_WHITE);
                         checker = 0;
                     }
-                if(positions != null && !positions.isEmpty() &&
-                        positions.contains(new ChessPosition(x,y))){
-                    s.append(SET_BG_COLOR_GREEN);
-                }
+                    if(!direction){
+                        if(positions != null && !positions.isEmpty() &&
+                                positions.contains(new ChessPosition(9-x,9-y))){
+                            s.append(SET_BG_COLOR_GREEN);
+                        }
+                    } else {
+                        if (positions != null && !positions.isEmpty() &&
+                                positions.contains(new ChessPosition(x, y))) {
+                            s.append(SET_BG_COLOR_GREEN);
+                        }
+                    }
 
                 String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
                 String piece = EMPTY;

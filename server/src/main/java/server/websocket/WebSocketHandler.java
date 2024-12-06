@@ -130,6 +130,7 @@ public class WebSocketHandler {
                 throw new DataAccessException("Invalid Move.");
             }
             notif = new ServerMessage(LOAD_GAME,data.game(), null);
+            connections.sendOne(user,notif);
             connections.broadcast(user, gameID, notif);
         } catch (Exception e) {
             notif = new ServerMessage(ERROR);
