@@ -8,10 +8,7 @@ import ui.websocket.ServerMessageHandler;
 import ui.websocket.WebSocketFacade;
 import websocket.messages.ServerMessage;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -166,7 +163,7 @@ public class InGameClient implements Client {
     }
 
     private String makeMove(String[] params) {
-        if (params.length == 2) {
+        if (params.length == 2 || params.length == 3) {
             String[] coorS = params[0].split(",");
             String[] coorE = params[1].split(",");
             if (coorS.length == 2 && coorE.length == 2) {
@@ -175,7 +172,12 @@ public class InGameClient implements Client {
                 if (starPos == null || endPos == null) {
                     return "Please input coordinates within the range of a-h and 1-8";
                 }
-                ChessPiece.PieceType promo = determinePromo(starPos, endPos);
+                ChessPiece.PieceType promo = null;
+                if(params.length == 3) {
+                    promo = determinePromo(starPos, endPos, params[2]);
+                } else {
+                    promo = determinePromo(starPos, endPos, null);
+                }
                 ChessMove move = new ChessMove(starPos,endPos,promo);
                 ws.makeMove(auth.authToken(), gameID, move);
                 return "Moved Piece.";
@@ -184,11 +186,16 @@ public class InGameClient implements Client {
         return "Please input coordinates in this syntax:make x,y x2,y2";
     }
 
-    private ChessPiece.PieceType determinePromo(ChessPosition starPos, ChessPosition endPos) {
+    private ChessPiece.PieceType determinePromo(ChessPosition starPos, ChessPosition endPos, String type) {
         if (game.getBoard().getPiece(starPos) != null) {
             ChessPiece.PieceType p = game.getBoard().getPiece(starPos).getPieceType();
-            if ((p != ChessPiece.PieceType.PAWN) && (endPos.getRow() == 1 || endPos.getRow() == 8)) {
-                return ChessPiece.PieceType.QUEEN;
+            if ((p == ChessPiece.PieceType.PAWN) && (endPos.getRow() == 1 || endPos.getRow() == 8)) {
+                    return switch (type) {
+                        case "b" -> ChessPiece.PieceType.BISHOP;
+                        case "r" -> ChessPiece.PieceType.ROOK;
+                        case "k" -> ChessPiece.PieceType.KNIGHT;
+                        default -> ChessPiece.PieceType.QUEEN;
+                    };
             }
         }
         return null;
