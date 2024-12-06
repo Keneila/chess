@@ -66,8 +66,10 @@ public class InGameClient implements Client {
                 };
             } else {
                 return switch (cmd) {
+                    case "redraw" -> redraw();
+                    case "highlight" -> highlight(params);
                     case "leave" -> leave();
-                    default -> "leave - exit game.";
+                    default -> helpObs();
                 };
             }
 

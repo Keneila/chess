@@ -161,16 +161,16 @@ public class WebSocketHandler {
                 || (data.game().isInCheckmate(color) || data.game().isInCheckmate(other))
                 || data.game().isInStalemate(color)) {
             ServerMessage checking = null;
-            if (data.game().isInCheck(color)) {
-                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", color));
-            } else if (data.game().isInCheck(other)) {
-                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", other));
+            if (data.game().isInCheckmate(color)) {
+                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost.", color));
+            } else if (data.game().isInCheckmate(other)) {
+                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost.", other));
             } else if (data.game().isInStalemate(color)){
                 checking = new ServerMessage(NOTIFICATION, "stalemate reached");
-            } else if (data.game().isInCheckmate(color)){
-                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost.", color));
+            } else if (data.game().isInCheck(color)){
+                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", color));
             } else {
-                checking = new ServerMessage(NOTIFICATION, String.format("Checkmate. %s lost. ", other));
+                checking = new ServerMessage(NOTIFICATION, String.format("%s is in check", other));
             }
             connections.sendOne(user,checking);
             connections.broadcast(user, gameID, checking);
