@@ -130,6 +130,9 @@ public class WebSocketHandler {
             if(data.game().getTeamTurn() != color){
                 throw new DataAccessException("Not your turn.");
             }
+            if(data.game().validMoves(move.getStartPosition()) == null){
+                throw new DataAccessException("No Piece there.");
+            }
             if (data.game().validMoves(move.getStartPosition()).contains(move)){
                 if (data.game().getBoard().getPiece(move.getStartPosition()).getTeamColor() == color){
                     message = String.format("%s moved %s to %s.", user,
