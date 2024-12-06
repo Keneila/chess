@@ -104,7 +104,7 @@ public class InGameClient implements Client {
         if (params.length == 1) {
             String[] coor = params[0].split(",");
             if(coor.length==2){
-                ChessPosition pos = parseCoor(coor);
+                ChessPosition pos = parseCoor(coor, true);
                 if(pos == null){
                     return "Please input coordinates within the range of a-h and 1-8";
                 }
@@ -126,13 +126,17 @@ public class InGameClient implements Client {
         return "Please input coordinates in this syntax: moves x,y";
     }
 
-    private ChessPosition parseCoor(String[] params){
+    private ChessPosition parseCoor(String[] params, boolean draw){
 
         int[] coor = new int[2];
         try{
             int y = Integer.parseInt(params[1]);
             if(y > 0 && y <9){
-                coor[1] = 9-y;
+                if (draw) {
+                    coor[1] = 9 - y;
+                } else {
+                    coor[1] = y;
+                }
             }
         } catch (NumberFormatException e) {
             return null;
@@ -142,7 +146,11 @@ public class InGameClient implements Client {
             Character x = params[0].toLowerCase().charAt(0);
             if(x >= 'a' && x <= 'h'){
                 int a = x-'a'+1;
-                coor[0] = a;
+                if (draw) {
+                    coor[0] = a;
+                } else {
+                    coor[0] = 9-a;
+                }
             } else {
                 return null;
             }
@@ -155,8 +163,8 @@ public class InGameClient implements Client {
             String[] coorS = params[0].split(",");
             String[] coorE = params[1].split(",");
             if (coorS.length == 2 && coorE.length == 2) {
-                ChessPosition starPos = parseCoor(coorS);
-                ChessPosition endPos = parseCoor(coorE);
+                ChessPosition starPos = parseCoor(coorS, false);
+                ChessPosition endPos = parseCoor(coorE, false);
                 if (starPos == null || endPos == null) {
                     return "Please input coordinates within the range of a-h and 1-8";
                 }
