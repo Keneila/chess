@@ -179,33 +179,8 @@ public class ChessBoard {
             s.append("\n");
             checker = checker-1;
             for(ChessPiece p : r){
-                if (checker == 0){
-                    s.append(SET_BG_COLOR_RED);
-                    checker = 1;
-                } else {
-                    s.append(SET_BG_COLOR_WHITE);
-                    checker = 0;
-                }
-                String colorSet = colorSet = SET_TEXT_COLOR_BLUE;;
-                String piece = EMPTY;
-                if (p != null){
-                    ChessGame.TeamColor color = p.getTeamColor();
-                    switch (color){
-                        case BLACK -> colorSet = SET_TEXT_COLOR_BLACK;
-                        case WHITE -> colorSet = SET_TEXT_COLOR_BLUE;
-                    }
-                    switch (p.getPieceType()){
-                        case ROOK -> piece = BLACK_ROOK;
-                        case KING -> piece = BLACK_KING;
-                        case BISHOP -> piece = BLACK_BISHOP;
-                        case QUEEN -> piece = BLACK_QUEEN;
-                        case PAWN -> piece = BLACK_PAWN;
-                        case KNIGHT -> piece = BLACK_KNIGHT;
-                        case null, default -> piece = " ";
-                    }
-                }
-                s.append(new String(colorSet + piece));
-                s.append("");
+                s.append(new String(String.valueOf(p)));
+                s.append(" ");
 
             }
         }

@@ -48,15 +48,12 @@ public class LoggedInClient implements Client{
                 int id = Integer.parseInt(params[0]);
                 String playerColor = params[1];
                 if("black".equalsIgnoreCase(playerColor) || "white".equalsIgnoreCase(playerColor)) {
+                    GameData game = find(id);
                     int gameID = 0;
-                    int num = 0;
                     ChessGame g = null;
-                    for (GameData game : server.listGames(auth.authToken())) {
-                        num++;
-                        if (num == id) {
-                            gameID = game.gameID();
-                            g = game.game();
-                        }
+                    if(game != null){
+                        g = game.game();
+                        gameID = game.gameID();
                     }
                     server.joinGame(auth.authToken(), playerColor, gameID);
                     state = State.PLAYING;
@@ -72,6 +69,17 @@ public class LoggedInClient implements Client{
         } else {
             return "Expected: join <ID> [WHITE|BLACK]";
         }
+    }
+    public GameData find(int id) throws Exception {
+        int num = 0;
+        ChessGame g = null;
+        for (GameData game : server.listGames(auth.authToken())) {
+            num++;
+            if (num == id) {
+                return game;
+            }
+        }
+        return null;
     }
 
     public String help() {
