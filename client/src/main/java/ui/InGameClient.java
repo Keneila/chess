@@ -104,19 +104,23 @@ public class InGameClient implements Client {
         if (params.length == 1) {
             String[] coor = params[0].split(",");
             if(coor.length==2){
-                ChessPosition pos = parseCoor(coor, true);
+                ChessPosition pos = parseCoor(coor, false);
                 if(pos == null){
                     return "Please input coordinates within the range of a-h and 1-8";
                 }
                 Collection<ChessMove> moves = game.validMoves(pos);
                 Collection<ChessPosition> spots = new java.util.ArrayList<>(List.of());
-                spots.add(pos);
+                int x = 9 - pos.getRow();
+                int y = 9 - pos.getColumn();
+                spots.add(new ChessPosition( x,y ));
                 if(moves!= null) {
                     for (var move : moves) {
-                        spots.add(move.getEndPosition());
+                        x = 9 -move.getEndPosition().getRow();
+                        y = 9 - move.getEndPosition().getColumn();
+                        spots.add(new ChessPosition(x,y));
                     }
                 }
-                if (color == null){
+                if (color == null || color.equals("obs")){
                     return printBoard(game.getBoard(),"white",spots);
                 } else {
                     return printBoard(game.getBoard(), color, spots);
@@ -178,9 +182,11 @@ public class InGameClient implements Client {
     }
 
     private ChessPiece.PieceType determinePromo(ChessPosition starPos, ChessPosition endPos) {
-        ChessPiece.PieceType p = game.getBoard().getPiece(starPos).getPieceType();
-        if((p != ChessPiece.PieceType.PAWN) && (endPos.getRow() == 1 || endPos.getRow() == 8)) {
-            return ChessPiece.PieceType.QUEEN;
+        if (game.getBoard().getPiece(starPos) != null) {
+            ChessPiece.PieceType p = game.getBoard().getPiece(starPos).getPieceType();
+            if ((p != ChessPiece.PieceType.PAWN) && (endPos.getRow() == 1 || endPos.getRow() == 8)) {
+                return ChessPiece.PieceType.QUEEN;
+            }
         }
         return null;
     }
